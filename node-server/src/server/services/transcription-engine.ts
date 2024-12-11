@@ -1,10 +1,8 @@
+import type {ConfigType} from '@shared/config/config-schema.js';
+import type {Logger} from '@shared/logger/logger.js';
 import EventEmitter from 'events';
-import TypedEmitter from 'typed-emitter';
+import type {TypedEmitter} from 'tiny-typed-emitter';
 import WebSocket from 'ws';
-
-import {Logger} from './logger';
-
-const WHISPER_SERVICE_ENDPOINT = 'ws://127.0.0.1:43007';
 
 export enum BackendTranscriptBlockType {
   Final = 0,
@@ -24,14 +22,19 @@ export type AudioTranscriptEvents = {
 };
 
 export default class TranscriptionEngine {
-  private _log: Logger;
   private _events = new EventEmitter() as TypedEmitter<AudioTranscriptEvents>;
+  get events() {
+    return this._events;
+  }
+
   private _ws?: WebSocket;
-  private _reconnectTimeout = 1_000;
+  private _reconnectInterval: number;
 
-  constructor(log: Logger) {
-    this._log = log;
-
+  constructor(
+    private _config: ConfigType,
+    private _log: Logger,
+  ) {
+    this._reconnectInterval = this._config.whisper.reconnectInterval;
     this._connectWhisperService();
 
     this._events.on('audioChunk', chunk => {
@@ -40,23 +43,21 @@ export default class TranscriptionEngine {
   }
 
   private _connectWhisperService() {
-    this._ws = new WebSocket(WHISPER_SERVICE_ENDPOINT);
+    this._ws = new WebSocket(this._config.whisper.endpoint);
 
     this._ws.on('error', err => {
       this._log.error({msg: 'Error on whisper service connection', err});
     });
 
     this._ws.on('close', () => {
-      this._log.info(
-        `Whisper service connection closed, reconnecting in ${this._reconnectTimeout}ms`
-      );
-      setTimeout(() => this._connectWhisperService(), this._reconnectTimeout);
-      this._reconnectTimeout = Math.min(30_000, 2 * this._reconnectTimeout);
+      this._log.info(`Whisper service connection closed, reconnecting in ${this._reconnectInterval}ms`);
+      setTimeout(() => this._connectWhisperService(), this._reconnectInterval);
+      this._config.whisper.reconnectInterval = Math.min(30_000, 2 * this._reconnectInterval);
     });
 
     this._ws.on('open', () => {
       this._log.info('Connected to whisper service');
-      this._reconnectTimeout = 1_000;
+      this._reconnectInterval = this._config.whisper.reconnectInterval;
     });
 
     this._ws.on('message', data => {
