@@ -1,24 +1,29 @@
-import dotenv from 'dotenv';
-import createLogger from './logger';
-import Fastify from 'fastify';
-import FastifyWebsocket from '@fastify/websocket';
-import createWebsocketHandler from './websocketHandler';
+import loadConfig from './shared/config/load-config.js';
+import createServer from './server/start-server.js';
+import createLogger from './shared/logger/logger.js';
 
-// Grab configuration from .env file
-dotenv.config();
+async function init() {
+  const config = loadConfig();
+  const logger = createLogger(config);
+  const server = createServer(config, logger);
 
-const log = createLogger();
+  process.on('uncaughtException', err => {
+    logger.fatal({msg: 'Uncaught exception', err});
+    throw err; // terminate on uncaught errors
+  });
 
-const fastify = Fastify({loggerInstance: log});
-fastify.register(FastifyWebsocket);
-fastify.register(createWebsocketHandler(log));
+  process.on('unhandledRejection', reason => {
+    const err = new Error(`Unhanded rejection. Reason: ${reason}`);
+    logger.fatal({msg: 'Unhandled rejection', err});
+    throw err; // terminate on uncaught rejection
+  });
 
-fastify.listen(
-  {port: process.env.PORT ? parseInt(process.env.PORT) : 8080},
-  err => {
-    if (err) {
-      fastify.log.fatal(err);
-      throw err;
-    }
+  try {
+    await server.listen({port: config.server.port, host: config.server.host});
+  } catch (err) {
+    logger.fatal({msg: 'Failed to start webserver', err});
+    throw err; // terminate if fails to start
   }
-);
+}
+
+await init();
