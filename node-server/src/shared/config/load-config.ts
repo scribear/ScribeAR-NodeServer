@@ -2,7 +2,13 @@ import type {Static} from '@sinclair/typebox';
 import {NodeEnv, SCHEMA, type ConfigType} from './config-schema.js';
 import envSchema from 'env-schema';
 
-export default function loadConfig(path?: string) {
+/**
+ * Loads environment configuration file from privated path
+ * Checks that configuration is correctly formatted
+ * @param path file path to a dotenv file
+ * @returns configuration
+ */
+export default function loadConfig(path?: string): ConfigType {
   const env = envSchema<Static<typeof SCHEMA>>({
     dotenv: {path},
     schema: SCHEMA,

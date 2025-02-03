@@ -1,7 +1,6 @@
 import type {ConfigType} from '@shared/config/config-schema.js';
 import type {Logger} from '@shared/logger/logger.js';
-import EventEmitter from 'events';
-import type {TypedEmitter} from 'tiny-typed-emitter';
+import {TypedEmitter} from 'tiny-typed-emitter';
 import WebSocket from 'ws';
 
 export enum BackendTranscriptBlockType {
@@ -17,16 +16,10 @@ export type BackendTranscriptBlock = {
 };
 
 export type AudioTranscriptEvents = {
-  audioChunk: (chunk: Buffer) => unknown;
   transcription: (block: BackendTranscriptBlock) => unknown;
 };
 
-export default class TranscriptionEngine {
-  private _events = new EventEmitter() as TypedEmitter<AudioTranscriptEvents>;
-  get events() {
-    return this._events;
-  }
-
+export default class TranscriptionEngine extends TypedEmitter<AudioTranscriptEvents> {
   private _ws?: WebSocket;
   private _reconnectInterval: number;
 
@@ -34,14 +27,14 @@ export default class TranscriptionEngine {
     private _config: ConfigType,
     private _log: Logger,
   ) {
+    super();
     this._reconnectInterval = this._config.whisper.reconnectInterval;
     this._connectWhisperService();
-
-    this._events.on('audioChunk', chunk => {
-      this._ws?.send(chunk);
-    });
   }
 
+  /**
+   * Connects to whisper service via websocket connection
+   */
   private _connectWhisperService() {
     this._ws = new WebSocket(this._config.whisper.endpoint);
 
@@ -49,6 +42,7 @@ export default class TranscriptionEngine {
       this._log.error({msg: 'Error on whisper service connection', err});
     });
 
+    // Reconnect to whisper service automatically after an exponentially increasing timeout
     this._ws.on('close', () => {
       this._log.info(`Whisper service connection closed, reconnecting in ${this._reconnectInterval}ms`);
       setTimeout(() => this._connectWhisperService(), this._reconnectInterval);
@@ -61,6 +55,7 @@ export default class TranscriptionEngine {
     });
 
     this._ws.on('message', data => {
+      // TODO: Better parsing and error handling
       const {final, inprogress} = JSON.parse(data.toString());
 
       if (final) {
@@ -71,7 +66,7 @@ export default class TranscriptionEngine {
           type: BackendTranscriptBlockType.Final,
         };
 
-        this._events.emit('transcription', block);
+        this.emit('transcription', block);
       }
       if (inprogress) {
         const block: BackendTranscriptBlock = {
@@ -81,28 +76,17 @@ export default class TranscriptionEngine {
           type: BackendTranscriptBlockType.InProgress,
         };
 
-        this._events.emit('transcription', block);
+        this.emit('transcription', block);
       }
     });
   }
 
-  registerSink(ws: WebSocket) {
-    const onTranscription = (block: BackendTranscriptBlock) => {
-      ws.send(JSON.stringify(block));
-    };
-
-    this._events.on('transcription', onTranscription);
-
-    ws.on('close', () => {
-      this._events.removeListener('transcription', onTranscription);
-    });
-  }
-
-  registerSource(ws: WebSocket) {
-    ws.on('message', data => {
-      if (data instanceof Buffer) {
-        this._events.emit('audioChunk', data);
-      }
-    });
+  /**
+   * Send an audio chunk to the backend
+   * Should be a buffer with 16k stereo float32 PCM audio
+   * @param chunk
+   */
+  sendAudioChunk(chunk: Buffer) {
+    this._ws?.send(chunk);
   }
 }

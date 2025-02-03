@@ -6,7 +6,7 @@ export type Logger = pino.Logger;
 /**
  * Creates a logger instance using app configuration
  * @param config configuration object
- * @returns created logger
+ * @returns logger instance
  */
 export default function createLogger(config: ConfigType): Logger {
   const logger = pino({
