@@ -4,6 +4,8 @@ import type {Logger} from '../shared/logger/logger.js';
 import TranscriptionEngine from './services/transcription-engine.js';
 import fastifyWebsocket from '@fastify/websocket';
 import websocketHandler from './routes/websocket-handler.js';
+import fastifyHelmet from '@fastify/helmet';
+import fastifySensible from '@fastify/sensible';
 
 declare module 'fastify' {
   export interface FastifyInstance {
@@ -17,16 +19,19 @@ declare module 'fastify' {
  * @returns
  */
 export default function createServer(config: ConfigType, logger: Logger) {
-  const fastify = Fastify({
-    loggerInstance: logger,
-  });
+  const fastify = Fastify({loggerInstance: logger});
 
   fastify.register(fastifyWebsocket);
 
-  fastify.decorate('config', config);
+  // Security and sensible defaults
+  fastify.register(fastifyHelmet);
+  fastify.register(fastifySensible);
 
+  // Make configuration and transcription engine avaiable on fastify instance (dependency injection)
+  fastify.decorate('config', config);
   fastify.decorate('transcriptionEngine', new TranscriptionEngine(config, logger));
 
+  // Register routes
   fastify.register(websocketHandler);
 
   return fastify;
