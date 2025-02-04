@@ -9,7 +9,11 @@ import WebSocket from 'ws';
  */
 function registerSink(transcriptionEngine: TranscriptionEngine, ws: WebSocket) {
   const onTranscription = (block: BackendTranscriptBlock) => {
-    ws.send(JSON.stringify(block));
+    try {
+      ws.send(JSON.stringify(block));
+    } catch {
+      //
+    }
   };
 
   transcriptionEngine.on('transcription', onTranscription);
@@ -27,7 +31,11 @@ function registerSink(transcriptionEngine: TranscriptionEngine, ws: WebSocket) {
 function registerSource(transcriptionEngine: TranscriptionEngine, ws: WebSocket) {
   ws.on('message', data => {
     if (data instanceof Buffer) {
-      transcriptionEngine.sendAudioChunk(data);
+      try {
+        transcriptionEngine.sendAudioChunk(data);
+      } catch {
+        //
+      }
     }
   });
 }
@@ -37,7 +45,7 @@ function registerSource(transcriptionEngine: TranscriptionEngine, ws: WebSocket)
  * @param fastify
  */
 export default function websocketHandler(fastify: FastifyInstance) {
-  fastify.get('/sourcesink', {websocket: true}, (ws, req) => {
+  fastify.get('/sourcesink', {websocket: true, preHandler: fastify.requestAuthorizer.authorize}, (ws, req) => {
     registerSink(fastify.transcriptionEngine, ws);
     registerSource(fastify.transcriptionEngine, ws);
 
@@ -46,7 +54,7 @@ export default function websocketHandler(fastify: FastifyInstance) {
     });
   });
 
-  fastify.get('/sink', {websocket: true}, (ws, req) => {
+  fastify.get('/sink', {websocket: true, preHandler: fastify.requestAuthorizer.authorize}, (ws, req) => {
     registerSink(fastify.transcriptionEngine, ws);
 
     ws.on('close', code => {
@@ -54,7 +62,7 @@ export default function websocketHandler(fastify: FastifyInstance) {
     });
   });
 
-  fastify.get('/source', {websocket: true}, (ws, req) => {
+  fastify.get('/source', {websocket: true, preHandler: fastify.requestAuthorizer.authorize}, (ws, req) => {
     registerSource(fastify.transcriptionEngine, ws);
 
     ws.on('close', code => {

@@ -6,11 +6,14 @@ import fastifyWebsocket from '@fastify/websocket';
 import websocketHandler from './routes/websocket-handler.js';
 import fastifyHelmet from '@fastify/helmet';
 import fastifySensible from '@fastify/sensible';
+import RequestAuthorizer from './services/request-authorizer.js';
+import accessTokenHandler from './routes/access-token-handler.js';
 
 declare module 'fastify' {
   export interface FastifyInstance {
     config: ConfigType;
     transcriptionEngine: TranscriptionEngine;
+    requestAuthorizer: RequestAuthorizer;
   }
 }
 
@@ -30,9 +33,11 @@ export default function createServer(config: ConfigType, logger: Logger) {
   // Make configuration and transcription engine avaiable on fastify instance (dependency injection)
   fastify.decorate('config', config);
   fastify.decorate('transcriptionEngine', new TranscriptionEngine(config, logger));
+  fastify.decorate('requestAuthorizer', new RequestAuthorizer(config));
 
   // Register routes
   fastify.register(websocketHandler);
+  fastify.register(accessTokenHandler);
 
   return fastify;
 }

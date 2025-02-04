@@ -26,6 +26,10 @@ export const SCHEMA = Type.Object({
 
   WHISPER_SERVICE_ENDPOINT: Type.String(),
   WHISPER_RECONNECT_INTERVAL: Type.Number({default: 1000}),
+
+  REQUIRE_AUTH: Type.Boolean(),
+  OVERRIDE_TOKEN: Type.String({default: ''}),
+  AUTHORIZE_LOCALHOST: Type.Boolean(),
 });
 
 export type ConfigType = Readonly<{
@@ -42,5 +46,10 @@ export type ConfigType = Readonly<{
   whisper: {
     endpoint: string;
     reconnectInterval: number;
+  };
+  auth: {
+    required: boolean;
+    overrideToken: string;
+    allowLocalhost: boolean;
   };
 }>;

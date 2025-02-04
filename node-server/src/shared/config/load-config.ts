@@ -30,6 +30,11 @@ export default function loadConfig(path?: string): ConfigType {
       endpoint: env.WHISPER_SERVICE_ENDPOINT,
       reconnectInterval: env.WHISPER_RECONNECT_INTERVAL,
     },
+    auth: {
+      required: env.REQUIRE_AUTH,
+      overrideToken: env.OVERRIDE_TOKEN,
+      allowLocalhost: env.AUTHORIZE_LOCALHOST,
+    },
   });
 
   return config;
