@@ -28,8 +28,9 @@ export const SCHEMA = Type.Object({
   WHISPER_RECONNECT_INTERVAL: Type.Number({default: 1000}),
 
   REQUIRE_AUTH: Type.Boolean(),
-  OVERRIDE_TOKEN: Type.String({default: ''}),
-  AUTHORIZE_LOCALHOST: Type.Boolean(),
+  ACCESS_TOKEN_REFRESH_INTERVAL_SEC: Type.Number({default: 5 * 60}),
+  ACCESS_TOKEN_VALID_PERIOD_SEC: Type.Number({default: 90 * 60}),
+  SESSION_LENGTH_SEC: Type.Number({default: 90 * 60}),
 });
 
 export type ConfigType = Readonly<{
@@ -49,7 +50,8 @@ export type ConfigType = Readonly<{
   };
   auth: {
     required: boolean;
-    overrideToken: string;
-    allowLocalhost: boolean;
+    accessTokenRefreshIntervalMS: number;
+    accessTokenValidPeriodMS: number;
+    sessionLengthMS: number;
   };
 }>;
