@@ -32,8 +32,9 @@ export default function loadConfig(path?: string): ConfigType {
     },
     auth: {
       required: env.REQUIRE_AUTH,
-      overrideToken: env.OVERRIDE_TOKEN,
-      allowLocalhost: env.AUTHORIZE_LOCALHOST,
+      accessTokenRefreshIntervalMS: env.ACCESS_TOKEN_REFRESH_INTERVAL_SEC * 1000,
+      accessTokenValidPeriodMS: env.ACCESS_TOKEN_VALID_PERIOD_SEC * 1000,
+      sessionLengthMS: env.SESSION_LENGTH_SEC * 1000,
     },
   });
 

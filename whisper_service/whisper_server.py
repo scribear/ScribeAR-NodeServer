@@ -94,23 +94,25 @@ async def audio_stream(websocket, path):
                 final, inprogress = online.process_iter()
                 out = []
 
-            block = {}
+            blocks = []
             result_final = format_output_transcript(final)
             result_inprogress = format_output_transcript(inprogress)
             if result_final is not None:
-                block['final'] = {
+                blocks.append({
+                    'type': 0,
                     'start': final[0],
                     'end': final[1],
                     'text': final[2]
-                }
+                })
             if result_inprogress is not None:
-                block['inprogress'] = {
+                blocks.append({
+                    'type': 1,
                     'start': inprogress[0],
                     'end': inprogress[1],
                     'text': inprogress[2]
-                }
+                })
 
-            if result_final is not None or result_inprogress is not None:
+            for block in blocks:
                 await websocket.send(json.dumps(block))
 
     except websockets.exceptions.ConnectionClosed:
