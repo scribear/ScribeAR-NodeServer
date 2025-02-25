@@ -9,13 +9,13 @@ In `node-server`
   npm install
   ```
 * Make copy of `template.env` and name it `.env`
-  * Edit `.env` to configure server (make sure log directory exists)
+  * Edit `.env` to configure server
 * Run server
   ```
   npm run dev
   ```
 
-In `whisper_service`
+In `whisper-service`
 
 * (optional) Create python virtual environment
 * Install dependencies
@@ -24,5 +24,5 @@ In `whisper_service`
   ```
 * Run server
   ```
-  python whisper_server.py --language en --model base
+  fastapi dev whisperService.py
   ```
