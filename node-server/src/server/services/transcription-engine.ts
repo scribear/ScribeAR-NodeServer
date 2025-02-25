@@ -46,7 +46,7 @@ export default class TranscriptionEngine extends TypedEmitter<AudioTranscriptEve
     this._ws.on('close', () => {
       this._log.info(`Whisper service connection closed, reconnecting in ${this._reconnectInterval}ms`);
       setTimeout(() => this._connectWhisperService(), this._reconnectInterval);
-      this._config.whisper.reconnectInterval = Math.min(30_000, 2 * this._reconnectInterval);
+      this._reconnectInterval = Math.min(30_000, 2 * this._reconnectInterval);
     });
 
     this._ws.on('open', () => {
