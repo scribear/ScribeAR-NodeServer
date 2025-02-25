@@ -1,6 +1,8 @@
 from whisperModelBase import WhisperModelBase
 import wave
-class WhisperMock(WhisperModelBase):
+
+
+class MockWhisper(WhisperModelBase):
   def loadModel(self):
     pass
 
