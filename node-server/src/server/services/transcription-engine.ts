@@ -55,38 +55,32 @@ export default class TranscriptionEngine extends TypedEmitter<AudioTranscriptEve
     });
 
     this._ws.on('message', data => {
-      // TODO: Better parsing and error handling
-      const {final, inprogress} = JSON.parse(data.toString());
-
-      if (final) {
-        const block: BackendTranscriptBlock = {
-          text: final.text,
-          start: final.start,
-          end: final.end,
-          type: BackendTranscriptBlockType.Final,
-        };
-
-        this.emit('transcription', block);
-      }
-      if (inprogress) {
-        const block: BackendTranscriptBlock = {
-          text: inprogress.text,
-          start: inprogress.start,
-          end: inprogress.end,
-          type: BackendTranscriptBlockType.InProgress,
-        };
-
-        this.emit('transcription', block);
-      }
+      // TODO: Check data format?
+      const block = JSON.parse(data.toString());
+      this.emit('transcription', block);
     });
   }
 
   /**
    * Send an audio chunk to the backend
-   * Should be a buffer with 16k stereo float32 PCM audio
+   * Each chunk should be buffer containing wav audio
    * @param chunk
    */
   sendAudioChunk(chunk: Buffer) {
-    this._ws?.send(chunk);
+    try {
+      this._ws?.send(chunk);
+    } catch (err) {
+      this._log.trace({msg: 'Error while sending audio chunk to whisper server', err});
+    }
+  }
+
+  /**
+   * Closes connection to whisper serverice permanently
+   */
+  destroy() {
+    this._log.info('Destroying transcription engine');
+    this._ws?.removeAllListeners('close');
+    this._ws?.close();
+    this.removeAllListeners();
   }
 }

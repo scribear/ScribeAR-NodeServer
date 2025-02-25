@@ -26,6 +26,11 @@ export const SCHEMA = Type.Object({
 
   WHISPER_SERVICE_ENDPOINT: Type.String(),
   WHISPER_RECONNECT_INTERVAL: Type.Number({default: 1000}),
+
+  REQUIRE_AUTH: Type.Boolean(),
+  ACCESS_TOKEN_REFRESH_INTERVAL_SEC: Type.Number({default: 5 * 60}),
+  ACCESS_TOKEN_VALID_PERIOD_SEC: Type.Number({default: 90 * 60}),
+  SESSION_LENGTH_SEC: Type.Number({default: 90 * 60}),
 });
 
 export type ConfigType = Readonly<{
@@ -42,5 +47,11 @@ export type ConfigType = Readonly<{
   whisper: {
     endpoint: string;
     reconnectInterval: number;
+  };
+  auth: {
+    required: boolean;
+    accessTokenRefreshIntervalMS: number;
+    accessTokenValidPeriodMS: number;
+    sessionLengthMS: number;
   };
 }>;
