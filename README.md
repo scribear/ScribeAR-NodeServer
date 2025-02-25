@@ -22,6 +22,8 @@ In `whisper-service`
   ```
   pip install -r requirements.txt
   ```
+* Make copy of `template.env` and name it `.env`
+  * Edit `.env` to configure server
 * Run server
   ```
   fastapi dev whisperService.py
