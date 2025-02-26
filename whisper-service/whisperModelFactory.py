@@ -12,6 +12,6 @@ def whisperModelFactory(modelKey: str, websocket: WebSocket) -> WhisperModelBase
       return MockWhisper(websocket)
     case 'fasterwhispertiny':
       from models.fasterWhisper import FasterWhisper
-      return FasterWhisper(websocket, 'tiny')
+      return FasterWhisper(websocket, 'tiny.en')
     case _:
       raise Exception('No model matching modelKey')
