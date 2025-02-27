@@ -1,6 +1,7 @@
 import io
 from fastapi import WebSocket
 from enum import IntEnum
+import logging
 
 class BackendTranscriptionBlockType(IntEnum):
   Final = 0
@@ -15,6 +16,7 @@ class WhisperModelBase:
   ws: WebSocket
   def __init__(self, ws: WebSocket):
     self.ws = ws
+    self.logger = logging.getLogger('uvicorn.error')
 
 
   def loadModel(self):
@@ -46,6 +48,7 @@ class WhisperModelBase:
     Call this when a section of finalized transcription is ready
     Start and end times are optional
     '''
+    self.logger.info(f'[{start:6.2f} - {end:6.2f}] Final      : {text}')
     await self.ws.send_json({
       'type': BackendTranscriptionBlockType.Final,
       'text': text,
@@ -59,6 +62,7 @@ class WhisperModelBase:
     If model does not support in progress guesses, only call onFinalTranscript
     Start and end times are optional
     '''
+    self.logger.info(f'[{start:6.2f} - {end:6.2f}] In Progress: {text}')
     await self.ws.send_json({
       'type': BackendTranscriptionBlockType.InProgress,
       'text': text,

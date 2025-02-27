@@ -4,9 +4,13 @@ from typing import Annotated
 from whisperModelFactory import whisperModelFactory
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect, Query
 import io
+import uvicorn
 
 load_dotenv()
 API_KEY = os.environ.get('API_KEY', '')
+LOG_LEVEL = os.environ.get('LOG_LEVEL', 'info')
+PORT = int(os.environ.get('PORT', 8000))
+HOST = os.environ.get('HOST', '127.0.0.1')
 
 app = FastAPI()
 
@@ -28,3 +32,7 @@ async def whisper(websocket: WebSocket, apiKey: Annotated[str | None, Query()] =
         except WebSocketDisconnect:
             whisperModel.unloadModel()
             return
+        
+
+if __name__ == '__main__':
+    uvicorn.run(app, log_level=LOG_LEVEL, port=PORT, host=HOST)
