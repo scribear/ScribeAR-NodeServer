@@ -3,6 +3,7 @@ import wave
 import numpy as np
 import numpy.typing as npt
 
+
 def decodeWav(wavBuffer: io.BytesIO) -> npt.NDArray:
     '''
     Decode a buffer containing wav data into numpy array for use with whisper
@@ -13,7 +14,7 @@ def decodeWav(wavBuffer: io.BytesIO) -> npt.NDArray:
         num channels : 1
     '''
     with wave.open(wavBuffer, 'rb') as wavAudio:
-        assert (wavAudio.getsampwidth() == 2)        
+        assert (wavAudio.getsampwidth() == 2)
         assert (wavAudio.getframerate() == 16_000)
         assert (wavAudio.getnchannels() == 1)
 
@@ -23,5 +24,5 @@ def decodeWav(wavBuffer: io.BytesIO) -> npt.NDArray:
         audio = np.frombuffer(frames, dtype=np.int16)
 
         # Normalize audio to between -1 and 1
-        audio = audio.astype(np.float16) / abs(np.iinfo(np.int16).min) 
+        audio = audio.astype(np.float16) / abs(np.iinfo(np.int16).min)
     return audio

@@ -5,8 +5,20 @@ import numpy as np
 import numpy.typing as npt
 
 
+class BufferAudioModelBase(WhisperModelBase):
+    '''
+    A partial WhisperModel implementation that handles buffering audio chunks into larger segments.
 
-class SegmentAudioModelBase(WhisperModelBase):
+    Wav audio chunks are interpreted as float16 numpy arrays normalized to [-1, 1] with a sample rate of 16k and appended to buffer.
+    Once buffer has at least minNewSamples "new" audio samples in it, processSegment() is called.
+        New refers to samples that were not part of the buffer in the previous call of processSegment().
+    Buffer passed to processSegment() is guaranteeded not to contain more than maxSegmentSamples audio samples in it.
+
+    Implements the queueAudioChunk() method.
+    The loadModel(), unloadModel(), and processSegment() methods need to be implemented.
+    '''
+    __slots__ = ['maxSegmentSamples', 'minNewSamples',
+                 'lastProcessedSamples', 'startTime', 'buffer']
     SAMPLE_RATE = 16_000
 
     def __init__(self, ws, maxSegmentSamples=SAMPLE_RATE * 30, minNewSamples=SAMPLE_RATE):
@@ -38,16 +50,17 @@ class SegmentAudioModelBase(WhisperModelBase):
         # If buffer is full, process segments until entire audio chunk can be inserted into buffer
         while len(extraAudio) > 0:
             samplesToCut = await self.processSegment(self.buffer.getCurrBuffer(), self.startTime)
-            
+
             self.buffer.shiftBuffer(samplesToCut)
             self.startTime += samplesToCut / self.SAMPLE_RATE
             self.lastProcessedSamples = len(self.buffer)
 
             extraAudio = self.buffer.appendSequence(extraAudio)
 
+        # Once there are enough new samples, process segments once
         if (len(self.buffer) - self.lastProcessedSamples) > self.minNewSamples:
             samplesToCut = await self.processSegment(self.buffer.getCurrBuffer(), self.startTime)
-            
+
             self.buffer.shiftBuffer(samplesToCut)
             self.startTime += samplesToCut / self.SAMPLE_RATE
             self.lastProcessedSamples = len(self.buffer)

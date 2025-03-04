@@ -1,4 +1,4 @@
-from modelBases.segmentAudioModelBase import SegmentAudioModelBase
+from modelBases.bufferAudioModelBase import BufferAudioModelBase
 import numpy.typing as npt
 import math
 
@@ -18,8 +18,37 @@ class TranscriptionSegment:
         return f'[{self.start:6.2f} - {self.end:6.2f}] {self.text}'
 
 
-class LocalAgreeModelBase(SegmentAudioModelBase):
+class LocalAgreeModelBase(BufferAudioModelBase):
+    '''
+    A partial WhisperModel implementation that handles local agreement (Liu et al., 2020) (Macháček et al., 2023)
+    If the last n transcriptions have matching prefix ending in sentence end punctuation,that prefix is emitted as a finalized transcription.
+        The audio samples corresponding to that transcription is then purged from the buffer. 
+        Any remaining transcription text is emitted as an inprogress transcription.
+
+    Implements the processSegment() method.
+    The loadModel(), unloadModel(), and transcribeAudio() methods need to be implemented.
+
+    @misc{liu2020lowlatencysequencetosequencespeechrecognition,
+      title={Low-Latency Sequence-to-Sequence Speech Recognition and Translation by Partial Hypothesis Selection}, 
+      author={Danni Liu and Gerasimos Spanakis and Jan Niehues},
+      year={2020},
+      eprint={2005.11185},
+      archivePrefix={arXiv},
+      primaryClass={cs.CL},
+      url={https://arxiv.org/abs/2005.11185}, 
+    }
+    @misc{macháček2023turningwhisperrealtimetranscription,
+      title={Turning Whisper into Real-Time Transcription System}, 
+      author={Dominik Macháček and Raj Dabre and Ondřej Bojar},
+      year={2023},
+      eprint={2307.14743},
+      archivePrefix={arXiv},
+      primaryClass={cs.CL},
+      url={https://arxiv.org/abs/2307.14743}, 
+    }
+    '''
     __slots__ = ['prevText', 'localAgreeDim', 'prevTranscriptions']
+
     def __init__(self, ws, localAgreeDim=2, *args, **kwargs):
         super().__init__(ws, *args, **kwargs)
 
@@ -31,11 +60,14 @@ class LocalAgreeModelBase(SegmentAudioModelBase):
         '''
         Transcribe audio into TranscriptionSegments containing text, start, and end times (relative to start of audio segment)
         audioSegment is a numpy array containing float16 audio normalized to [-1, 1] at 16k sample rate
+        prevText is the previously finalized text that occurred before the current audioSegment
         returns a list of TranscriptionSegments
         '''
         raise Exception('Must implement per model')
 
     async def processSegment(self, audioSegment, audioSegmentStartTime):
+        maxSegmentLengthReached = len(audioSegment) >= self.maxSegmentSamples
+
         segments = await self.transcribeAudio(audioSegment, self.prevText)
 
         # Extract segments that satisfy local agreement
@@ -57,7 +89,7 @@ class LocalAgreeModelBase(SegmentAudioModelBase):
                 finalText = ''
 
         # If max segment length has been reached, force finalization of some text
-        if (len(audioSegment) >= self.maxSegmentSamples):
+        if maxSegmentLengthReached:
             start = finalEndTime
             forcedFinalText = ''
             while finalEndIdx < len(segments) and finalEndTime < self.minNewSamples / self.SAMPLE_RATE:
@@ -77,7 +109,12 @@ class LocalAgreeModelBase(SegmentAudioModelBase):
         self.prevTranscriptions.append(segments)
         if len(self.prevTranscriptions) >= self.localAgreeDim:
             self.prevTranscriptions.pop(0)
-        return min(int(finalEndTime * self.SAMPLE_RATE), len(audioSegment))
+
+        finalizedSamples = finalEndTime * self.SAMPLE_RATE
+        # Ensure at least the minimum number of samples is purged in case of silence
+        if maxSegmentLengthReached:
+            finalizedSamples = max(self.minNewSamples, finalizedSamples)
+        return min(finalizedSamples, len(audioSegment))
 
     def localAgree(self, segment: TranscriptionSegment, index: int):
         if len(self.prevTranscriptions) != self.localAgreeDim - 1:

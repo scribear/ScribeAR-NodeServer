@@ -19,7 +19,7 @@ app = FastAPI()
 async def whisper(websocket: WebSocket, apiKey: Annotated[str | None, Query()] = None, modelKey: Annotated[str | None, Query()] = None):
     if (apiKey != API_KEY):
         return
-        
+
     await websocket.accept()
 
     whisperModel = whisperModelFactory(modelKey, websocket)
@@ -32,7 +32,7 @@ async def whisper(websocket: WebSocket, apiKey: Annotated[str | None, Query()] =
         except WebSocketDisconnect:
             whisperModel.unloadModel()
             return
-        
+
 
 if __name__ == '__main__':
     uvicorn.run(app, log_level=LOG_LEVEL, port=PORT, host=HOST)

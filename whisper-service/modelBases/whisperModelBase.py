@@ -13,6 +13,8 @@ class WhisperModelBase:
     '''
     Base whisper model class
     Presents a unified interface for using different whisper models on the backend
+
+    The loadModel(), unloadModel(), and queueAudioChunk() methods need to be implemented.
     '''
     __slots__ = ['logger', 'ws']
 

@@ -3,16 +3,20 @@ import wave
 
 
 class MockWhisper(WhisperModelBase):
-  def loadModel(self):
-    pass
+    '''
+    Dummy WhisperModel implementation that returns the duration of recieved audio as "transcription"
+    '''
 
-  async def queueAudioChunk(self, chunk):
-    infofile = wave.open(chunk, 'r')
-    frames = infofile.getnframes()
-    rate = infofile.getframerate()
+    def loadModel(self):
+        pass
 
-    duration = frames / float(rate)
-    await self.onFinalTranscript(f'Received {duration} seconds of audio.')
+    async def queueAudioChunk(self, chunk):
+        infofile = wave.open(chunk, 'r')
+        frames = infofile.getnframes()
+        rate = infofile.getframerate()
 
-  def unloadModel(self):
-    pass
+        duration = frames / float(rate)
+        await self.onFinalTranscript(f'Received {duration} seconds of audio.')
+
+    def unloadModel(self):
+        pass

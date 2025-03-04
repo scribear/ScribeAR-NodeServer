@@ -7,6 +7,7 @@ class NPCircularBuffer:
     An implementation of a *fixed* length circular buffer numpy array
     '''
     __slots__ = ['dtype', 'maxSize', 'array', 'end']
+
     def __init__(self, maxSize: int, dtype: npt.DTypeLike = 'int'):
         self.dtype = dtype
         self.maxSize = maxSize
@@ -47,14 +48,3 @@ class NPCircularBuffer:
         Have len() function return length of current buffer
         '''
         return self.end
-    
-# b = NPCircularBuffer(3)
-
-# b.appendSequence(np.array([0, 1]))
-# print(b.getCurrBuffer())
-# b.appendSequence(np.array([2, 3]))
-# print(b.getCurrBuffer())
-# b.shiftBuffer(1)
-# print(b.getCurrBuffer())
-# b.appendSequence(np.array([5]))
-# print(b.getCurrBuffer())
