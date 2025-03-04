@@ -1,4 +1,4 @@
-from whisperModelBase import WhisperModelBase
+from modelBases.whisperModelBase import WhisperModelBase
 import wave
 
 
