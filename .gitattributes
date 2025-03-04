@@ -1,0 +1,1 @@
+whisper-service/weights/tiny-quantized.bin filter=lfs diff=lfs merge=lfs -text
