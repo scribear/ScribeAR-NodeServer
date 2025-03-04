@@ -1,30 +1,7 @@
-## ScribeAR Node Server
+# ScribeAR Node Server
 
-### Developing
+Backend for ScribeAR. Handles transcribing audio stream and rebroadcasting transcriptions to multiple devices.
 
-In `node-server`
+## Getting Started
 
-* Install dependencies
-  ```
-  npm install
-  ```
-* Make copy of `template.env` and name it `.env`
-  * Edit `.env` to configure server
-* Run server
-  ```
-  npm run dev
-  ```
-
-In `whisper-service`
-
-* (optional) Create python virtual environment
-* Install dependencies
-  ```
-  pip install -r requirements.txt
-  ```
-* Make copy of `template.env` and name it `.env`
-  * Edit `.env` to configure server
-* Run server
-  ```
-  fastapi dev whisperService.py
-  ```
+* See `README.md` in `/node-server` and `/whisper-service` folders for detailed instructions for installation, development, and usage.

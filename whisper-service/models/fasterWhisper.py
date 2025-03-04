@@ -9,12 +9,13 @@ class FasterWhisper(LocalAgreeModelBase):
     Implementation of WhisperModel using faster whisper and local agreement.
     '''
 
-    def __init__(self, ws: WebSocket, modelSize: str, *args, **kwargs):
+    def __init__(self, ws: WebSocket, modelSize: str, device='auto', *args, **kwargs):
         super().__init__(ws, *args, **kwargs)
         self.modelSize = modelSize
+        self.device = device
 
     def loadModel(self):
-        self.model = WhisperModel(self.modelSize)
+        self.model = WhisperModel(self.modelSize, device=self.device)
 
     async def transcribeAudio(self, audioSegment, prevText):
         transcription, _ = self.model.transcribe(

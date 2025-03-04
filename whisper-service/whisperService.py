@@ -1,7 +1,7 @@
 import os
 from dotenv import load_dotenv
 from typing import Annotated
-from whisperModelFactory import whisperModelFactory
+from modelFactory import modelFactory
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect, Query
 import io
 import uvicorn
@@ -22,7 +22,7 @@ async def whisper(websocket: WebSocket, apiKey: Annotated[str | None, Query()] =
 
     await websocket.accept()
 
-    whisperModel = whisperModelFactory(modelKey, websocket)
+    whisperModel = modelFactory(modelKey, websocket)
     whisperModel.loadModel()
 
     while True:

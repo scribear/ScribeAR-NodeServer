@@ -2,9 +2,9 @@ from fastapi import WebSocket
 from modelBases.whisperModelBase import WhisperModelBase
 
 
-def whisperModelFactory(modelKey: str, websocket: WebSocket) -> WhisperModelBase:
+def modelFactory(modelKey: str, websocket: WebSocket) -> WhisperModelBase:
     '''
-    Loads and creates model with given key
+    Instantiates model with corresponding modelKey
     returns: A WhisperModel instance
     '''
     match modelKey:
@@ -14,7 +14,7 @@ def whisperModelFactory(modelKey: str, websocket: WebSocket) -> WhisperModelBase
         case 'fasterwhispertinyen':
             from models.fasterWhisper import FasterWhisper
             return FasterWhisper(websocket, 'tiny.en', localAgreeDim=2, minNewSamples=FasterWhisper.SAMPLE_RATE)
-        case 'whispercpptinyquant':
+        case 'rpi5-whispercpp-tiny-quantized':
             from models.whisperCpp import WhisperCpp
             return WhisperCpp(websocket, './weights/tiny-quantized.bin', minNewSamples=WhisperCpp.SAMPLE_RATE * 5)
         case _:
