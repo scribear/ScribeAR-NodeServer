@@ -31,6 +31,7 @@ A backend service for ScribeAR to generate transcriptions from a WAV audio strea
 **Implementing a new model**
 
 1. Implement `WhisperModelBase`. See `/modelBases/whisperModelBase.py` for required methods and usage.
+    * Other model bases found in `/modelBases` can be helpful for implementing commonly used functions.
 2. Create `{modelName}Requirements.txt` and populate with python dependencies for your model.
 3. Associate model key(s) to your model in `modelFactory.py`. 
 
