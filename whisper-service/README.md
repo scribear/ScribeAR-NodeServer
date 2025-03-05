@@ -41,7 +41,7 @@ A backend service for ScribeAR to generate transcriptions from a WAV audio strea
 2. Configure service in `.env`
 3. Start webserver
     ```
-    fastapi dev whisperService.py
+    fastapi dev index.py
     ```
 
 ### Usage
@@ -52,5 +52,5 @@ A backend service for ScribeAR to generate transcriptions from a WAV audio strea
 2. Configure service in `.env`
 3. Start webserver
     ```
-    python whisperService.py
+    python index.py
     ```
