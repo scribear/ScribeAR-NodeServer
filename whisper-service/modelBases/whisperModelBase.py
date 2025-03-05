@@ -36,7 +36,7 @@ class WhisperModelBase:
         '''
         raise Exception('Must implement per model')
 
-    async def queueAudioChunk(self, chunk: io.BytesIO):
+    async def queueAudioChunk(self, chunk: io.BytesIO) -> None:
         '''
         Called when an audio chunk is received
         Chunk will be a buffer containing wav audio
