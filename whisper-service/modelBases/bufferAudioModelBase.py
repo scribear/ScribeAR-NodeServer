@@ -49,7 +49,7 @@ class BufferAudioModelBase(WhisperModelBase):
 
         # If buffer is full, process segments until entire audio chunk can be inserted into buffer
         while len(extraAudio) > 0:
-            samplesToCut = await self.processSegment(self.buffer.getCurrBuffer(), self.startTime)
+            samplesToCut = await self.processSegment(self.buffer.getCurrBuffer().copy(), self.startTime)
 
             self.buffer.shiftBuffer(samplesToCut)
             self.startTime += samplesToCut / self.SAMPLE_RATE

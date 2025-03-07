@@ -93,8 +93,10 @@ class LocalAgreeModelBase(BufferAudioModelBase):
             start = finalEndTime
             forcedFinalText = ''
             while finalEndIdx < len(segments) and finalEndTime < self.minNewSamples / self.SAMPLE_RATE:
-                forcedFinalText += segments[i].text
-                finalEndTime = max(finalEndTime, segments[i].end)
+                forcedFinalText += segments[finalEndIdx].text
+                finalEndTime = max(finalEndTime, segments[finalEndIdx].end)
+                finalEndIdx += 1
+                self.prevText = forcedFinalText
             await self.onFinalTranscript(forcedFinalText, audioSegmentStartTime + start, audioSegmentStartTime + finalEndTime)
 
         # Output remaining text as in progress transcription
@@ -110,7 +112,7 @@ class LocalAgreeModelBase(BufferAudioModelBase):
         if len(self.prevTranscriptions) >= self.localAgreeDim:
             self.prevTranscriptions.pop(0)
 
-        finalizedSamples = finalEndTime * self.SAMPLE_RATE
+        finalizedSamples = int(finalEndTime * self.SAMPLE_RATE)
         # Ensure at least the minimum number of samples is purged in case of silence
         if maxSegmentLengthReached:
             finalizedSamples = max(self.minNewSamples, finalizedSamples)

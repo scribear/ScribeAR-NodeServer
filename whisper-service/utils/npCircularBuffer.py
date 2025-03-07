@@ -39,6 +39,7 @@ class NPCircularBuffer:
         '''
         Shifts buffer by a given number of elements
         '''
+        assert (type(shift) == int)
         assert (self.end >= shift)
         self.array = np.roll(self.array, -shift)
         self.end -= shift
