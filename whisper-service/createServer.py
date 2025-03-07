@@ -34,5 +34,3 @@ if __name__ == 'createServer':
 
     config = loadConfig()
     app = createServer(config)
-
-    print(__name__)

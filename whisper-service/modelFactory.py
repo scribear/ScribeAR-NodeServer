@@ -14,5 +14,8 @@ def modelFactory(modelKey: str, websocket: WebSocket) -> WhisperModelBase:
         case 'cuda-fasterwhisper-tinyen':
             from models.fasterWhisper import FasterWhisper
             return FasterWhisper(websocket, 'tiny.en', device='cuda', localAgreeDim=2, minNewSamples=FasterWhisper.SAMPLE_RATE)
+        case 'cpu-fasterwhisper-tinyen':
+            from models.fasterWhisper import FasterWhisper
+            return FasterWhisper(websocket, 'tiny.en', device='cpu', localAgreeDim=2, minNewSamples=FasterWhisper.SAMPLE_RATE)
         case _:
             raise Exception('No model matching modelKey')
