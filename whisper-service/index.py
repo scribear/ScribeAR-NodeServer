@@ -4,7 +4,7 @@ from createServer import createServer
 
 if __name__ == '__main__':
     config = loadConfig()
-    app = createServer()
+    app = createServer(config)
 
     uvicorn.run(
         app,
