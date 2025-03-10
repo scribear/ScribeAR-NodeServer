@@ -6,6 +6,7 @@ class MockWhisper(WhisperModelBase):
     '''
     Dummy WhisperModel implementation that returns the duration of recieved audio as "transcription"
     '''
+    time = 0
 
     def loadModel(self):
         pass
@@ -16,7 +17,11 @@ class MockWhisper(WhisperModelBase):
         rate = infofile.getframerate()
 
         duration = frames / float(rate)
-        await self.onFinalTranscript(f'Received {duration} seconds of audio.')
+
+        start = self.time
+        self.time += duration
+
+        await self.onFinalTranscript(f'Received {duration} seconds of audio.', start, self.time)
 
     def unloadModel(self):
         pass
