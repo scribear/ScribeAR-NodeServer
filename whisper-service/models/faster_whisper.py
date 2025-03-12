@@ -1,6 +1,6 @@
 from faster_whisper import WhisperModel
-from modelBases.whisperModelBase import WhisperModelBase
-from modelBases.localAgreeModelBase import LocalAgreeModelBase, TranscriptionSegment
+from model_bases.whisper_model_base import WhisperModelBase
+from model_bases.local_agree_model_base import LocalAgreeModelBase, TranscriptionSegment
 from fastapi import WebSocket
 
 

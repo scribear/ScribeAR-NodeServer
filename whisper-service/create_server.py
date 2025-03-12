@@ -1,8 +1,8 @@
 from typing import Annotated
-from modelFactory import modelFactory
+from model_factory import modelFactory
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect, Query
 import io
-from loadConfig import Config
+from load_config import Config
 
 
 def createServer(config: Config):
@@ -29,8 +29,8 @@ def createServer(config: Config):
     return app
 
 
-if __name__ == 'createServer':
-    from loadConfig import loadConfig
+if __name__ == 'create_server':
+    from load_config import loadConfig
 
     config = loadConfig()
     app = createServer(config)

@@ -2,11 +2,11 @@ import os
 import wave
 import pytest
 from fastapi.testclient import TestClient
-from loadConfig import loadConfig
+from load_config import loadConfig
 
-from createServer import createServer
+from create_server import createServer
 
-from models.mockWhisper import MockWhisper
+from models.mock_whisper import MockWhisper
 
 @pytest.fixture
 def config():

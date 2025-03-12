@@ -1,6 +1,6 @@
 import uvicorn
-from loadConfig import loadConfig
-from createServer import createServer
+from load_config import loadConfig
+from create_server import createServer
 
 if __name__ == '__main__':
     config = loadConfig()

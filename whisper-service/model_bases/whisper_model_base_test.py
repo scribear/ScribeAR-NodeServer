@@ -1,5 +1,5 @@
 import pytest
-from whisperModelBase import WhisperModelBase, BackendTranscriptionBlockType
+from whisper_model_base import WhisperModelBase, BackendTranscriptionBlockType
 
 class DummyWhisper(WhisperModelBase):
     def loadModel(self):
