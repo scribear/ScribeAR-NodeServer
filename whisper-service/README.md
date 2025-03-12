@@ -18,7 +18,7 @@ A backend service for ScribeAR to generate transcriptions from a WAV audio strea
 
 2. Per model dependencies. Each model has its own `{modelName}Requirements.txt` found in the `/models` directory. Install the dependencies for the models you'd like to run.
     ```
-    pip install -r models/{modelName}Requirements.txt
+    pip install -r models/{modelName}_requirements.txt
     ```
 
 ### Configuration
@@ -27,6 +27,17 @@ A backend service for ScribeAR to generate transcriptions from a WAV audio strea
 * Edit `.env` to configure server
 
 ### Developing
+
+**Run unit tests**
+
+1. Install dependencies defined in `test_requirements.txt`
+    ```
+    pip install -r test_requirements.txt
+    ```
+2. Run tests with pytest
+    ```
+    pytest
+    ```
 
 **Implementing a new model**
 
