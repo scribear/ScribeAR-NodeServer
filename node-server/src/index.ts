@@ -1,5 +1,5 @@
-import loadConfig from './shared/config/load-config.js';
-import createServer from './server/start-server.js';
+import loadConfig from './shared/config/load_config.js';
+import createServer from './server/start_server.js';
 import createLogger from './shared/logger/logger.js';
 
 async function init() {

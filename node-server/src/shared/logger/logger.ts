@@ -1,5 +1,5 @@
 import {pino} from 'pino';
-import type {ConfigType} from '../config/config-schema.js';
+import type {ConfigType} from '../config/config_schema.js';
 
 export type Logger = pino.Logger;
 

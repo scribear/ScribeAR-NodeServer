@@ -1,5 +1,5 @@
 import type {Static} from '@sinclair/typebox';
-import {NodeEnv, SCHEMA, type ConfigType} from './config-schema.js';
+import {NodeEnv, SCHEMA, type ConfigType} from './config_schema.js';
 import envSchema from 'env-schema';
 
 /**

@@ -1,8 +1,8 @@
-import {LogLevel, type ConfigType} from '@shared/config/config-schema.js';
+import {LogLevel, type ConfigType} from '@shared/config/config_schema.js';
 import logger from '@shared/logger/logger.js';
 import {describe, expect, vi} from 'vitest';
 import os from 'os';
-import formatTestNames from '@test/utils/format-test-names.js';
+import formatTestNames from '@test/utils/format_test_names.js';
 
 describe('Logger', it => {
   const time = 12345;

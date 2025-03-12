@@ -1,7 +1,7 @@
 import {describe, expect, vi} from 'vitest';
-import RequestAuthorizer from './request-authorizer.js';
-import fakeLogger from '@test/fakes/fake-logger.js';
-import type {ConfigType} from '@shared/config/config-schema.js';
+import RequestAuthorizer from './request_authorizer.js';
+import fakeLogger from '../../../test/fakes/fake_logger.js';
+import type {ConfigType} from '@shared/config/config_schema.js';
 import Fastify from 'fastify';
 
 describe('Request authorizer', () => {

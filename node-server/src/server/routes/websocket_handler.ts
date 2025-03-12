@@ -1,4 +1,4 @@
-import type {BackendTranscriptBlock} from '@server/services/transcription-engine.js';
+import type {BackendTranscriptBlock} from '@server/services/transcription_engine.js';
 import {FastifyInstance, type FastifyRequest} from 'fastify';
 import WebSocket from 'ws';
 

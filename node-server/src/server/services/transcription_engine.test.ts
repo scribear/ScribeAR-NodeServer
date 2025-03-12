@@ -2,9 +2,9 @@ import {describe, expect} from 'vitest';
 import {WebSocketServer, WebSocket} from 'ws';
 import http from 'http';
 import type {AddressInfo} from 'net';
-import TranscriptionEngine, {BackendTranscriptBlockType, type BackendTranscriptBlock} from './transcription-engine.js';
-import fakeLogger from '@test/fakes/fake-logger.js';
-import type {ConfigType} from '@shared/config/config-schema.js';
+import TranscriptionEngine, {BackendTranscriptBlockType, type BackendTranscriptBlock} from './transcription_engine.js';
+import fakeLogger from '../../../test/fakes/fake_logger.js';
+import type {ConfigType} from '@shared/config/config_schema.js';
 import fs from 'fs';
 import path from 'path';
 
@@ -78,7 +78,7 @@ describe('Transcription engine', it => {
       receivedChunks.push(data as Buffer);
     });
 
-    const audioFileDir = path.join(__dirname, '../../../test/audio-files/wikipedia-.fun/chunked');
+    const audioFileDir = path.join(__dirname, '../../../../test-audio-files/wikipedia-.fun/chunked');
     const chunkFiles = fs.readdirSync(audioFileDir);
     const chunks = [];
     for (const file of chunkFiles) {

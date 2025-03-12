@@ -1,13 +1,13 @@
 import Fastify from 'fastify';
-import type {ConfigType} from '../shared/config/config-schema.js';
+import type {ConfigType} from '../shared/config/config_schema.js';
 import type {Logger} from '../shared/logger/logger.js';
-import TranscriptionEngine from './services/transcription-engine.js';
+import TranscriptionEngine from './services/transcription_engine.js';
 import fastifyWebsocket from '@fastify/websocket';
-import websocketHandler from './routes/websocket-handler.js';
+import websocketHandler from './routes/websocket_handler.js';
 import fastifyHelmet from '@fastify/helmet';
 import fastifySensible from '@fastify/sensible';
-import RequestAuthorizer from './services/request-authorizer.js';
-import accessTokenHandler from './routes/session-auth-handler.js';
+import RequestAuthorizer from './services/request_authorizer.js';
+import accessTokenHandler from './routes/session_auth_handler.js';
 
 declare module 'fastify' {
   export interface FastifyInstance {

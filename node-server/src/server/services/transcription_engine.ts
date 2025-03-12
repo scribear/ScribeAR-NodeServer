@@ -1,4 +1,4 @@
-import type {ConfigType} from '@shared/config/config-schema.js';
+import type {ConfigType} from '@shared/config/config_schema.js';
 import type {Logger} from '@shared/logger/logger.js';
 import {TypedEmitter} from 'tiny-typed-emitter';
 import WebSocket from 'ws';
