@@ -1,4 +1,4 @@
-from modelBases.bufferAudioModelBase import BufferAudioModelBase
+from model_bases.bufferAudioModelBase import BufferAudioModelBase
 import numpy.typing as npt
 import math
 
