@@ -1,6 +1,6 @@
-from model_bases.whisperModelBase import WhisperModelBase
-from utils.npCircularBuffer import NPCircularBuffer
-from utils.decodeWav import decodeWav
+from model_bases.whisper_model_base_test import WhisperModelBase
+from utils.np_circular_buffer import NPCircularBuffer
+from utils.decode_wav import decodeWav
 import numpy as np
 import numpy.typing as npt
 
