@@ -24,7 +24,7 @@ Deploys node-server, whisper-service, and ScribeAR frontend to be running on the
     ```
 3. Setup whisper-service
     ```
-    cd ../whisper-service
+    cd ScribeAR-NodeServer/whisper-service
     ```
     ```
     python3 -m venv .venv
@@ -43,7 +43,7 @@ Deploys node-server, whisper-service, and ScribeAR frontend to be running on the
     * Edit `.env` according to [Whisper Service Configuration](./whisper-service/README.md#configuration-options)
 6. Build node-server
     ```
-    cd ScribeAR-NodeServer/node-server
+    cd ../node-server
     ```
     ```
     npm install
