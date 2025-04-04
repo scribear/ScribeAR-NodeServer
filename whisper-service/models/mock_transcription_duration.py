@@ -2,7 +2,7 @@ from model_bases.whisper_model_base import WhisperModelBase
 import wave
 
 
-class MockWhisper(WhisperModelBase):
+class MockTranscribeDuration(WhisperModelBase):
     '''
     Dummy WhisperModel implementation that returns the duration of recieved audio as "transcription"
     '''

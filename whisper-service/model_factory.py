@@ -8,14 +8,14 @@ def modelFactory(modelKey: str, websocket: WebSocket) -> WhisperModelBase:
     returns: A WhisperModel instance
     '''
     match modelKey:
-        case 'mock':
-            from models.mock_whisper import MockWhisper
-            return MockWhisper(websocket)
-        case 'cuda-fasterwhisper-tinyen':
+        case 'mock-transcription-duration':
+            from models.mock_transcription_duration import MockTranscribeDuration
+            return MockTranscribeDuration(websocket)
+        case 'faster-whisper:gpu-tiny-en':
             from models.faster_whisper import FasterWhisper
-            return FasterWhisper(websocket, 'tiny.en', device='cuda', localAgreeDim=2, minNewSamples=FasterWhisper.SAMPLE_RATE * 2)
-        case 'cpu-fasterwhisper-tinyen':
+            return FasterWhisper(websocket, 'tiny.en', device='cuda', localAgreeDim=2, minNewSamples=FasterWhisper.SAMPLE_RATE)
+        case 'faster-whisper:cpu-tiny-en':
             from models.faster_whisper import FasterWhisper
-            return FasterWhisper(websocket, 'tiny.en', device='cpu', localAgreeDim=2, minNewSamples=FasterWhisper.SAMPLE_RATE * 2)
+            return FasterWhisper(websocket, 'tiny.en', device='cpu', localAgreeDim=2, minNewSamples=FasterWhisper.SAMPLE_RATE * 3)
         case _:
             raise Exception('No model matching modelKey')
