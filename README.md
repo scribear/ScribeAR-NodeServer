@@ -55,3 +55,12 @@ Deploys node-server, whisper-service, and ScribeAR frontend to be running on the
     * Edit `.env` according to [Node Server Configuration](./node-server/README.md#configuration-options)
     * Ensure port, api_key, and model_key match between whisper service and node server configurations.
 8. The `aio-autostart.sh` script can then be used to start whisper service, node server, and google chrome automatically. Set this to automatically run on login with a user that is automatically logged in to have a hands free startup.
+    * For Ubuntu, this can be achieved using by creating the following file at `~/.config/autostart/aio-autostart.desktop`
+        ```
+        [Desktop Entry]
+        Type=Application
+        Exec= { PATH TO aio-autostart.sh SCRIPT }
+        NoDisplay=false
+        X-GNOME-Autostart-enabled=true
+        Terminal=true
+        ```

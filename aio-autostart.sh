@@ -24,7 +24,6 @@ echo "Starting Whisper Service"
 	python index.py 2>> $BASE_DIR/logs/whisper-service.log 
 " &
 PYTHON_PID=$!
-sleep 5
 
 
 echo "Starting Node Server"
@@ -33,7 +32,7 @@ echo "Starting Node Server"
 	npm start >> $BASE_DIR/logs/node-server.log
 " &
 NODE_PID=$!
-sleep 5
+sleep 15
 
 
 echo "Launching Chrome"
