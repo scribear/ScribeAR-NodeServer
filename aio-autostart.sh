@@ -36,4 +36,4 @@ sleep 15
 
 
 echo "Launching Chrome"
-google-chrome "https://scribear.illinois.edu/v/latest/"
+google-chrome "https://scribear.illinois.edu/v/latest/" --start-fullscreen
