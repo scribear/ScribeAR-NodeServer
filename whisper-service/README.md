@@ -60,7 +60,7 @@ A backend service for ScribeAR to generate transcriptions from a WAV audio strea
 2. Configure service in `.env`
 3. Start webserver
     ```
-    unvicorn index:app
+    python index.py
     ```
 
 ## Documentation

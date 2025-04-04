@@ -21,7 +21,7 @@ echo "Starting Whisper Service"
 /bin/bash -c "
 	cd $BASE_DIR/whisper-service; 
 	source .venv/bin/activate; 
-	uvicorn index:app --no-use-colors 2>> $BASE_DIR/logs/whisper-service.log 
+	python index.py 2>> $BASE_DIR/logs/whisper-service.log 
 " &
 PYTHON_PID=$!
 sleep 5
