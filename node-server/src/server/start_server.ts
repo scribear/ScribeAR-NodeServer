@@ -1,4 +1,5 @@
 import Fastify from 'fastify';
+import fastifyCors from '@fastify/cors';
 import type {ConfigType} from '../shared/config/config_schema.js';
 import type {Logger} from '../shared/logger/logger.js';
 import TranscriptionEngine from './services/transcription_engine.js';
@@ -25,6 +26,13 @@ export default function createServer(config: ConfigType, logger: Logger) {
   const fastify = Fastify({loggerInstance: logger});
 
   fastify.register(fastifyWebsocket);
+
+  fastify.register(fastifyCors, {
+    origin: 'http://localhost:3000', // Specify the allowed origin
+    methods: ['GET', 'POST'], // Allowed HTTP methods
+    allowedHeaders: ['Content-Type', 'Authorization'], // Allowed headers
+    credentials: true // Enable credentials (cookies, authorization headers, etc.)
+  });
 
   // Security and sensible defaults
   fastify.register(fastifyHelmet);
