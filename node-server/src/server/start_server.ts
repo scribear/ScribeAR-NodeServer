@@ -28,10 +28,8 @@ export default function createServer(config: ConfigType, logger: Logger) {
   fastify.register(fastifyWebsocket);
 
   fastify.register(fastifyCors, {
-    origin: 'http://localhost:3000', // Specify the allowed origin
-    methods: ['GET', 'POST'], // Allowed HTTP methods
-    allowedHeaders: ['Content-Type', 'Authorization'], // Allowed headers
-    credentials: true // Enable credentials (cookies, authorization headers, etc.)
+    origin: config.server.corsOrigin,
+    methods: ['GET', 'POST'],
   });
 
   // Security and sensible defaults

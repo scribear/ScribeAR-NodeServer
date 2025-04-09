@@ -23,6 +23,7 @@ export const SCHEMA = Type.Object({
 
   HOST: Type.String({default: 'localhost'}),
   PORT: Type.Number({default: 8000}),
+  CORS_ORIGIN: Type.String(),
 
   WHISPER_SERVICE_ENDPOINT: Type.String(),
   WHISPER_RECONNECT_INTERVAL: Type.Number({default: 1000}),
@@ -43,6 +44,7 @@ export type ConfigType = Readonly<{
   server: {
     host: string;
     port: number;
+    corsOrigin: string;
   };
   whisper: {
     endpoint: string;
