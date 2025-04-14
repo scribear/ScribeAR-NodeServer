@@ -28,6 +28,7 @@ jobs:
         with:
           node-version: ${{ env.node-version }}
           cache: 'npm'
+          cache-dependency-path: 'node-server/package-lock.json'
 
       - name: Run tests
         run: npm run ci-test
@@ -47,7 +48,8 @@ jobs:
         with:
           node-version: ${{ env.node-version }}
           cache: 'npm'
-  
+          cache-dependency-path: 'node-server/package-lock.json'
+
       - name: Run linter
         run: npm run lint
 
@@ -66,6 +68,7 @@ jobs:
         with:
           node-version: ${{ env.node-version }}
           cache: 'npm'
+          cache-dependency-path: 'node-server/package-lock.json'
 
       - name: Run build
         run: npm run build
