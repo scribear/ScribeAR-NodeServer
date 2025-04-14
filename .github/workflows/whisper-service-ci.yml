@@ -2,6 +2,8 @@ name: whisper-service CI
 
 on:
   push:
+    paths:
+      - whisper-service/**
   pull_request:
   workflow_dispatch:
 
