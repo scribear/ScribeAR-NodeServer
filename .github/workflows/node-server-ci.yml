@@ -16,6 +16,9 @@ jobs:
   test-node:
     runs-on: ubuntu-latest
     steps:
+      - name: Set up Git repository
+        uses: actions/checkout@v4
+
       - uses: ./.github/actions/setup-node-server
         with:
           node-version: ${{ env.NODE_VERSION }}
@@ -26,6 +29,9 @@ jobs:
   lint-node:
     runs-on: ubuntu-latest
     steps:
+      - name: Set up Git repository
+        uses: actions/checkout@v4
+
       - uses: ./.github/actions/setup-node-server
         with:
           node-version: ${{ env.NODE_VERSION }}
@@ -36,6 +42,9 @@ jobs:
   build-node:
     runs-on: ubuntu-latest
     steps:
+      - name: Set up Git repository
+        uses: actions/checkout@v4
+
       - uses: ./.github/actions/setup-node-server
         with:
           node-version: ${{ env.NODE_VERSION }}
