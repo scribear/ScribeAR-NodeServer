@@ -3,16 +3,19 @@ from fastapi import FastAPI, WebSocket, WebSocketDisconnect, Query
 from model_bases.whisper_model_base import WhisperModelBase
 from load_config import Config
 import io
+import asyncio
 
 def createServer(config: Config, modelFactory: Callable[[], WhisperModelBase]):
     app = FastAPI()
 
     @app.websocket("/whisper")
     async def whisper(websocket: WebSocket, apiKey: Annotated[str | None, Query()] = None, modelKey: Annotated[str | None, Query()] = None):
-        if (apiKey != config.API_KEY):
-            return
-
         await websocket.accept()
+        if (apiKey != config.API_KEY):
+            await asyncio.sleep(1)
+            await websocket.send_text('Invalid API key!')
+            await websocket.close()
+            return
 
         whisperModel = modelFactory(modelKey, websocket)
         whisperModel.loadModel()

@@ -2,6 +2,7 @@ import os
 import pytest
 import unittest.mock as mock
 from fastapi import WebSocket
+from fastapi.websockets import WebSocketDisconnect
 from fastapi.testclient import TestClient
 from load_config import Config
 from model_bases.whisper_model_base import WhisperModelBase
@@ -57,7 +58,7 @@ def client(app):
     return TestClient(app)
 
 
-def test_mock_whisper(client, fakeConfig, fakeWhisperModel):
+def test_accepts_valid_api_key(client, fakeConfig, fakeWhisperModel):
     wav_files = [
         "../test-audio-files/wikipedia-.fun/chunked/chunk_000.wav",
         "../test-audio-files/wikipedia-.fun/chunked/chunk_001.wav",
@@ -96,3 +97,16 @@ def test_mock_whisper(client, fakeConfig, fakeWhisperModel):
 
         bytesIO_arg = call_args[0]
         assert bytesIO_arg.getvalue() == data, "Correct data transferred"
+
+def test_rejects_invalid_api_key(client):
+    url = f"/whisper?apiKey=NOT_API_KEY&modelKey=test-model"
+
+
+    with client.websocket_connect(url) as websocket:
+        response = websocket.receive_text()
+        assert response == 'Invalid API key!', "Rejects invalid API key"
+
+        # Should disconnect socket after
+        with pytest.raises(WebSocketDisconnect):
+            websocket.receive_json()
+
