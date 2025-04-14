@@ -10,7 +10,7 @@ from model_bases.whisper_model_base import WhisperModelBase
 from create_server import createServer
 
 
-@pytest.fixture
+@pytest.fixture(scope='session')
 def fakeConfig():
     config = Config()
     config.API_KEY = 'SOME_API_KEY'
@@ -20,7 +20,7 @@ def fakeConfig():
     return config
 
 
-@pytest.fixture
+@pytest.fixture(scope='function')
 def fakeWhisperModel():
     class FakeWhisperModel(WhisperModelBase):
         def __init__(self):
@@ -38,7 +38,7 @@ def fakeWhisperModel():
     return mock.Mock(wraps=FakeWhisperModel())
 
 
-@pytest.fixture
+@pytest.fixture(scope='function')
 def fakeModelFactory(fakeWhisperModel):
     def fakeFactory(modelKey: str, ws: WebSocket):
         if modelKey == 'test-model':
@@ -48,12 +48,12 @@ def fakeModelFactory(fakeWhisperModel):
     return fakeFactory
 
 
-@pytest.fixture
+@pytest.fixture(scope='function')
 def app(fakeConfig, fakeModelFactory):
     return createServer(fakeConfig, fakeModelFactory)
 
 
-@pytest.fixture
+@pytest.fixture(scope='function')
 def client(app):
     return TestClient(app)
 
@@ -100,8 +100,6 @@ def test_accepts_valid_api_key(client, fakeConfig, fakeWhisperModel):
 
 def test_rejects_invalid_api_key(client):
     url = f"/whisper?apiKey=NOT_API_KEY&modelKey=test-model"
-
-
     with client.websocket_connect(url) as websocket:
         response = websocket.receive_text()
         assert response == 'Invalid API key!', "Rejects invalid API key"

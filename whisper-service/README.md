@@ -30,11 +30,20 @@ A backend service for ScribeAR to generate transcriptions from a WAV audio strea
 
 **Run unit tests**
 
-1. Ensure that you have installed global dependencies dependencies as well as model dependencies for the models that you want to test
+1. Ensure that you have installed global dependencies dependencies
 2. Run tests with pytest
     ```
     pytest
     ```
+
+**Test coverage**
+
+1. Ensure that you have installed global dependencies dependencies
+2. Run tests with pytest
+    ```
+    pytest --cov=. --cov-report=html
+    ```
+3. Coverage results can be found in `htmlcov` folder
 
 **Implementing a new model**
 
@@ -67,12 +76,12 @@ A backend service for ScribeAR to generate transcriptions from a WAV audio strea
 
 ### Configuration Options
 
-| Option | Options | Description |
-| - | - | - |
-| `LOG_LEVEL` | `info`, `debug`, `trace` | Sets the verbosity of logging. |
-| `API_KEY` | `string` | The api key that must be passed to whisper-service in order to establish a connection. Should match `apiKey=` url parameter for node server. |
-| `HOST` | `ip address` | The socket the whisper service will bind to. Use `0.0.0.0` to make available to local network, `127.0.0.1` to localhost only. |
-| `PORT` | `number` | Port number that whisper service will listen for connections on. Should match the port node server is trying to connect to. |
+| Option      | Options                  | Description                                                                                                                                  |
+|-------------|--------------------------|----------------------------------------------------------------------------------------------------------------------------------------------|
+| `LOG_LEVEL` | `info`, `debug`, `trace` | Sets the verbosity of logging.                                                                                                               |
+| `API_KEY`   | `string`                 | The api key that must be passed to whisper-service in order to establish a connection. Should match `apiKey=` url parameter for node server. |
+| `HOST`      | `ip address`             | The socket the whisper service will bind to. Use `0.0.0.0` to make available to local network, `127.0.0.1` to localhost only.                |
+| `PORT`      | `number`                 | Port number that whisper service will listen for connections on. Should match the port node server is trying to connect to.                  |
 
 ### Model Implementations and Model Keys
 
@@ -84,10 +93,10 @@ A single model implementation might have multiple model keys mapped to it. For e
 
 Below is a table of model keys and model implementations
 
-| Model Key | Model Implementation | Description |
-| - | - | - |
+| Model Key                     | Model Implementation          | Description                                                                                                               |
+|-------------------------------|-------------------------------|---------------------------------------------------------------------------------------------------------------------------|
 | `mock_transcription_duration` | `mock-transcription-duration` | This model does not perform transcriptions. It returns the transcription blocks describing the duration of audio recieved |
-| `faster-whisper:gpu-tiny-en` | `faster-whisper` | Run faster whisper using tiny.en model with 2-dim local agreement in 1 second chunks on gpu |
-| `faster-whisper:cpu-tiny-en` | `faster-whisper` | Run faster whisper using tiny.en model with 2-dim local agreement in 3 second chunks on cpu |
+| `faster-whisper:gpu-tiny-en`  | `faster-whisper`              | Run faster whisper using tiny.en model with 2-dim local agreement in 1 second chunks on gpu                               |
+| `faster-whisper:cpu-tiny-en`  | `faster-whisper`              | Run faster whisper using tiny.en model with 2-dim local agreement in 3 second chunks on cpu                               |
 
 TODO: Perhaps make model key parsable so that changes for options don't require adding/modifying model key. For example: `faster-whisper:device=gpu,model=tiny.en,agreement=2,chunk=1`.
