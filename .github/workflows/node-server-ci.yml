@@ -19,9 +19,6 @@ jobs:
       - name: Set up Git repository
         uses: actions/checkout@v4
 
-      - name: Navigate to node-server
-        run: cd node-server
-  
       - name: Set up Node.js ${{ env.node-version }}
         uses: actions/setup-node@v4
         with:
@@ -30,6 +27,7 @@ jobs:
           cache-dependency-path: 'node-server/package-lock.json'
 
       - name: Run tests
+        working-directory: 'node-server'
         run: npm run ci-test
       
   lint-node:
@@ -38,9 +36,6 @@ jobs:
       - name: Set up Git repository
         uses: actions/checkout@v4
 
-      - name: Navigate to node-server
-        run: cd node-server
-  
       - name: Set up Node.js ${{ env.node-version }}
         uses: actions/setup-node@v4
         with:
@@ -49,6 +44,7 @@ jobs:
           cache-dependency-path: 'node-server/package-lock.json'
 
       - name: Run linter
+        working-directory: 'node-server'
         run: npm run lint
 
   build-node:
@@ -57,9 +53,6 @@ jobs:
       - name: Set up Git repository
         uses: actions/checkout@v4
 
-      - name: Navigate to node-server
-        run: cd node-server
-  
       - name: Set up Node.js ${{ env.node-version }}
         uses: actions/setup-node@v4
         with:
@@ -68,4 +61,5 @@ jobs:
           cache-dependency-path: 'node-server/package-lock.json'
 
       - name: Run build
+        working-directory: 'node-server'
         run: npm run build
