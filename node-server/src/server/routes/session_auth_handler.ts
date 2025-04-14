@@ -7,7 +7,11 @@ import {FastifyInstance} from 'fastify';
 export default function sessionAuthHandler(fastify: FastifyInstance) {
   fastify.get('/accessToken', {preHandler: fastify.requestAuthorizer.authorizeLocalhost}, (request, reply) => {
     const {accessToken, expires} = fastify.requestAuthorizer.getAccessToken();
-    return reply.send({accessToken, expires: expires.toISOString()});
+    return reply.send({
+      accessToken,
+      serverAddress: fastify.config.server.serverAddress,
+      expires: expires.toISOString(),
+    });
   });
 
   fastify.post('/startSession', (request, reply) => {

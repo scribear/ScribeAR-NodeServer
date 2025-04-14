@@ -26,6 +26,7 @@ export default function loadConfig(path?: string): ConfigType {
       host: env.HOST,
       port: env.PORT,
       corsOrigin: env.CORS_ORIGIN,
+      serverAddress: env.SERVER_ADDRESS,
     },
     whisper: {
       endpoint: env.WHISPER_SERVICE_ENDPOINT,
