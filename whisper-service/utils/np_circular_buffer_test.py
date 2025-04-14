@@ -87,6 +87,23 @@ def test_shift_buffer():
     ), "Correct sequence in buffer"
 
 
+def test_len():
+    buffer = NPCircularBuffer(5)
+
+    assert len(buffer) == 0, "Reports correct length"
+
+    buffer.appendSequence(np.array([1, 2]))
+    assert len(buffer) == 2, "Reports correct length"
+
+    buffer.appendSequence(np.array([3, 4, 5]))
+    assert len(buffer) == 5, "Reports correct length"
+
+    buffer.appendSequence(np.array([6, 7]))
+    assert len(buffer) == 5, "Reports correct length"
+
+    buffer.shiftBuffer(3)
+    assert len(buffer) == 2, "Reports correct length"
+
 def test_shift_and_append():
     buffer = NPCircularBuffer(10)
 
