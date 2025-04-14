@@ -10,7 +10,7 @@ permissions:
   contents: read
 
 env:
-  NODE_VERSION: 20
+  node-version: 20
 
 jobs:
   test-node:
@@ -19,9 +19,15 @@ jobs:
       - name: Set up Git repository
         uses: actions/checkout@v4
 
-      - uses: ./.github/actions/setup-node-server
+      - name: Navigate to node-server
+        shell: bash
+        run: cd node-server
+  
+      - name: Set up Node.js ${{ env.node-version }}
+        uses: actions/setup-node@v4
         with:
-          node-version: ${{ env.NODE_VERSION }}
+          node-version: ${{ env.node-version }}
+          cache: 'npm'
 
       - name: Run tests
         run: npm run ci-test
@@ -32,10 +38,16 @@ jobs:
       - name: Set up Git repository
         uses: actions/checkout@v4
 
-      - uses: ./.github/actions/setup-node-server
+      - name: Navigate to node-server
+        shell: bash
+        run: cd node-server
+  
+      - name: Set up Node.js ${{ env.node-version }}
+        uses: actions/setup-node@v4
         with:
-          node-version: ${{ env.NODE_VERSION }}
-      
+          node-version: ${{ env.node-version }}
+          cache: 'npm'
+  
       - name: Run linter
         run: npm run lint
 
@@ -45,9 +57,15 @@ jobs:
       - name: Set up Git repository
         uses: actions/checkout@v4
 
-      - uses: ./.github/actions/setup-node-server
+      - name: Navigate to node-server
+        shell: bash
+        run: cd node-server
+  
+      - name: Set up Node.js ${{ env.node-version }}
+        uses: actions/setup-node@v4
         with:
-          node-version: ${{ env.NODE_VERSION }}
-      
+          node-version: ${{ env.node-version }}
+          cache: 'npm'
+
       - name: Run build
         run: npm run build
