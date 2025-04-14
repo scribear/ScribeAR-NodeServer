@@ -15,7 +15,7 @@ env:
   python-version: 3.12
 
 jobs:
-  test-python:
+  test-whisper-service:
     runs-on: ubuntu-latest
     steps:
       - name: Set up Git repository
