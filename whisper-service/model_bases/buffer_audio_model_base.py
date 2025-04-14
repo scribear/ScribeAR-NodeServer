@@ -1,4 +1,4 @@
-from model_bases.whisper_model_base_test import WhisperModelBase
+from model_bases.whisper_model_base import WhisperModelBase
 from utils.np_circular_buffer import NPCircularBuffer
 from utils.decode_wav import decodeWav
 import numpy as np
