@@ -144,7 +144,7 @@ export default class RequestAuthorizer {
     done: DoneFuncWithErrOrRes,
   ) {
     if (!this._config.auth.required) return done();
-    if (request.socket.remoteAddress === '127.0.0.1') return done();
+    if (request.ip === '127.0.0.1' || request.ip === '::1') return done();
     if (this.sessionTokenIsValid(request.query.sessionToken)) return done();
 
     reply.code(403);
