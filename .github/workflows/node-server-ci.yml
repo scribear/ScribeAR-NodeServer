@@ -10,22 +10,15 @@ permissions:
   contents: read
 
 env:
-  node-version: 20
+  NODE_VERSION: 20
 
 jobs:
   test-node:
     runs-on: ubuntu-latest
     steps:
-      - name: Navigate to node-server
-        shell: bash
-        run: cd node-server
-
-      - name: Set up Node.js ${{ env.node-version }}
-        uses: actions/setup-node@v4
+      - uses: ./.github/actions/setup-node-server
         with:
-          node-version: ${{ env.node-version }}
-          cache: 'npm'
-          cache-dependency-path: 'node-server/package-lock.json'
+          node-version: ${{ env.NODE_VERSION }}
 
       - name: Run tests
         run: npm run ci-test
@@ -33,33 +26,19 @@ jobs:
   lint-node:
     runs-on: ubuntu-latest
     steps:
-      - name: Navigate to node-server
-        shell: bash
-        run: cd node-server
-
-      - name: Set up Node.js ${{ env.node-version }}
-        uses: actions/setup-node@v4
+      - uses: ./.github/actions/setup-node-server
         with:
-          node-version: ${{ env.node-version }}
-          cache: 'npm'
-          cache-dependency-path: 'node-server/package-lock.json'
-
+          node-version: ${{ env.NODE_VERSION }}
+      
       - name: Run linter
         run: npm run lint
 
   build-node:
     runs-on: ubuntu-latest
     steps:
-      - name: Navigate to node-server
-        shell: bash
-        run: cd node-server
-
-      - name: Set up Node.js ${{ env.node-version }}
-        uses: actions/setup-node@v4
+      - uses: ./.github/actions/setup-node-server
         with:
-          node-version: ${{ env.node-version }}
-          cache: 'npm'
-          cache-dependency-path: 'node-server/package-lock.json'
-
+          node-version: ${{ env.NODE_VERSION }}
+      
       - name: Run build
         run: npm run build

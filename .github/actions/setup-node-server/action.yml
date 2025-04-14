@@ -1,0 +1,21 @@
+name: 'Setup node-server'
+description: 'Navigates to node-server directory and installs dependencies'
+
+inputs:
+  node-version:
+    description: 'Node version to use'
+    required: true
+
+runs:
+  using: "composite"
+  steps:
+    - name: Navigate to node-server
+      shell: bash
+      run: cd node-server
+
+    - name: Set up Node.js ${{ inputs.node-version }}
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ inputs.node-version }}
+        cache: 'npm'
+        cache-dependency-path: 'node-server/package-lock.json'
