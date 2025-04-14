@@ -23,8 +23,10 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.node-version }}
-          cache: 'npm'
-          cache-dependency-path: 'node-server/package-lock.json'
+
+      - name: Install dependencies
+        working-directory: 'node-server'
+        run: npm ci
 
       - name: Run tests
         working-directory: 'node-server'
@@ -40,8 +42,10 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.node-version }}
-          cache: 'npm'
-          cache-dependency-path: 'node-server/package-lock.json'
+
+      - name: Install dependencies
+        working-directory: 'node-server'
+        run: npm ci  
 
       - name: Run linter
         working-directory: 'node-server'
@@ -57,9 +61,11 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.node-version }}
-          cache: 'npm'
-          cache-dependency-path: 'node-server/package-lock.json'
 
+      - name: Install dependencies
+        working-directory: 'node-server'
+        run: npm ci
+  
       - name: Run build
         working-directory: 'node-server'
         run: npm run build
