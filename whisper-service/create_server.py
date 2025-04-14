@@ -1,11 +1,10 @@
-from typing import Annotated
-from model_factory import modelFactory
+from typing import Annotated, Callable
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect, Query
-import io
+from model_bases.whisper_model_base import WhisperModelBase
 from load_config import Config
+import io
 
-
-def createServer(config: Config):
+def createServer(config: Config, modelFactory: Callable[[], WhisperModelBase]):
     app = FastAPI()
 
     @app.websocket("/whisper")
@@ -31,6 +30,7 @@ def createServer(config: Config):
 
 if __name__ == 'create_server':
     from load_config import loadConfig
+    from model_factory import modelFactory
 
     config = loadConfig()
-    app = createServer(config)
+    app = createServer(config, modelFactory)

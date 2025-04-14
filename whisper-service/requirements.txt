@@ -1,6 +1,7 @@
 fastapi==0.115.8
 fastapi-cli===0.0.7
 websockets==15.0
+numpy==2.2.4
 
 # Test requirements
 pytest==8.3.5
