@@ -8,10 +8,9 @@
     "clean": "gts clean",
     "fix": "eslint --fix",
     "dev": "tsc-watch --compiler ts-patch/compiler/tsc.js --onSuccess 'node ./build/src/index.js' | pino-pretty",
-    "pretest": "npm install",
+    "pretest": "npm run lint",
     "test": "vitest --ui --coverage",
-    "posttest": "npm run lint",
-    "prebuild": "npm install",
+    "ci-test": "vitest run",
     "build": "tspc",
     "prestart": "npm run build",
     "start": "node ./build/src/index.js"
