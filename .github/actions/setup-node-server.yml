@@ -1,0 +1,19 @@
+name: 'Setup node-server'
+
+inputs:
+  node-version:
+    required: true
+    type: string
+
+runs:
+  using: "composite"
+  steps:
+    - name: Navigate to node-server
+      run: cd node-server
+
+    - name: Set up Node.js ${{ inputs.node-version }}
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ inputs.node-version }}
+        cache: 'npm'
+        cache-dependency-path: 'node-server/package-lock.json'
