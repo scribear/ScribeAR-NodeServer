@@ -20,7 +20,6 @@ class NPCircularBuffer:
         Append a sequence to the end of the circular buffer
         Attempts to append as many elements as possible, returns elements that were not appended
         '''
-        assert (self.dtype == sequence.dtype)
         assert (len(sequence.shape) == 1)
 
         lenToCopy = min(self.maxSize - self.end, len(sequence))
@@ -40,7 +39,8 @@ class NPCircularBuffer:
         Shifts buffer by a given number of elements
         '''
         assert (type(shift) == int)
-        assert (self.end >= shift)
+        assert (shift >= 0)
+        shift = min(self.end, shift)
         self.array = np.roll(self.array, -shift)
         self.end -= shift
 
