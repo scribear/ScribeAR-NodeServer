@@ -96,9 +96,10 @@ def test_accepts_valid_api_key(client, fake_config, fake_transcription_model):
     ]
     wav_data = []
     for wav_file in wav_files:
-        assert os.path.exists(wav_file), "Test wav file not found"
+        file_path = os.path.join(os.path.dirname(__file__), wav_file)
+        assert os.path.exists(file_path), "Test wav file not found"
 
-        with open(wav_file, "rb") as f:
+        with open(file_path, "rb") as f:
             wav_data.append(f.read())
 
     url = f"/whisper?api_key={fake_config.API_KEY}&model_key=test-model"
@@ -107,8 +108,8 @@ def test_accepts_valid_api_key(client, fake_config, fake_transcription_model):
             websocket.send_bytes(data)
         websocket.close()
 
-    fake_transcription_model.loadModel.assert_called_once()
-    fake_transcription_model.unloadModel.assert_called_once()
+    fake_transcription_model.load_model.assert_called_once()
+    fake_transcription_model.unload_model.assert_called_once()
 
     call_count = fake_transcription_model.queue_audio_chunk.call_args_list
     assert len(call_count) == len(
