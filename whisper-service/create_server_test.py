@@ -52,7 +52,7 @@ def fake_transcription_model():
     return mock.Mock(wraps=Fake())
 
 @pytest.fixture(scope='function')
-def test_client(fake_config):
+def test_client(fake_config, fake_transcription_model):
     '''
     Create a FastAPI test client for each test
     '''

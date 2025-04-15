@@ -19,7 +19,7 @@ class ModelKey(StrEnum):
     '''
     MOCK_TRANSCRIPTION_DURATION = "mock-transcription-duration"
     FASTER_WHISPER_GPU_TINY_EN = "faster-whisper:gpu-tiny-en"
-    FASTER_WHISPER_CPU_TINY_EN = "'faster-whisper:cpu-tiny-en"
+    FASTER_WHISPER_CPU_TINY_EN = "faster-whisper:cpu-tiny-en"
 
 
 def model_factory(model_key: ModelKey, websocket: WebSocket) -> TranscriptionModelBase:
