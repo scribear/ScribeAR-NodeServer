@@ -1,7 +1,7 @@
 '''
 Unit tests for create_server function.
 '''
-# pylint: disable=redefined-outer-name
+# pylint: disable=redefined-outer-name,too-many-locals
 import os
 from unittest import mock
 import pytest
@@ -36,6 +36,7 @@ def fake_transcription_model():
         '''
         Fake transcription model to track how object's methods are called
         '''
+
         def __init__(self):
             super().__init__(None)
 
@@ -50,37 +51,23 @@ def fake_transcription_model():
 
     return mock.Mock(wraps=Fake())
 
-
 @pytest.fixture(scope='function')
-def fake_model_factory(fake_transcription_model):
+def test_client(fake_config):
     '''
-    Create a fake model factory for each test 
+    Create a FastAPI test client for each test
     '''
     def fake_factory(model_key: str, ws: WebSocket):
         if isinstance(ws, WebSocket) and model_key == 'test-model':
             return fake_transcription_model
 
-        raise NotImplementedError('Invalid model key or invalid websocket argument.')
-    return fake_factory
-
-
-@pytest.fixture(scope='function')
-def app(fake_config, fake_model_factory):
-    '''
-    Create a FastAPI app for each test
-    '''
-    return create_server(fake_config, fake_model_factory)
-
-
-@pytest.fixture(scope='function')
-def client(app):
-    '''
-    Create a FastAPI test client for each test
-    '''
+        raise NotImplementedError(
+            'Invalid model key or invalid websocket argument.'
+        )
+    app = create_server(fake_config, fake_factory)
     return TestClient(app)
 
 
-def test_accepts_valid_api_key(client, fake_config, fake_transcription_model):
+def test_accepts_valid_api_key(test_client, fake_config, fake_transcription_model):
     '''
     Test that websocket handler passes audio chunks to transcription model
     '''
@@ -103,7 +90,7 @@ def test_accepts_valid_api_key(client, fake_config, fake_transcription_model):
             wav_data.append(f.read())
 
     url = f"/whisper?api_key={fake_config.API_KEY}&model_key=test-model"
-    with client.websocket_connect(url) as websocket:
+    with test_client.websocket_connect(url) as websocket:
         for data in wav_data:
             websocket.send_bytes(data)
         websocket.close()
@@ -124,12 +111,12 @@ def test_accepts_valid_api_key(client, fake_config, fake_transcription_model):
         assert bytes_io_arg.getvalue() == data, "Correct data transferred"
 
 
-def test_rejects_invalid_api_key(client):
+def test_rejects_invalid_api_key(test_client):
     '''
     Test that websocket handler closes connection if invalid api key is given
     '''
     url = "/whisper?api_key=NOT_API_KEY&model_key=test-model"
-    with client.websocket_connect(url) as websocket:
+    with test_client.websocket_connect(url) as websocket:
         response = websocket.receive_text()
         assert response == 'Invalid API key!', "Rejects invalid API key"
 
