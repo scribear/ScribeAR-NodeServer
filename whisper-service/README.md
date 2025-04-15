@@ -16,7 +16,7 @@ A backend service for ScribeAR to generate transcriptions from a WAV audio strea
       pip install -r requirements.txt
       ```
 
-2. Per model implementation dependencies. Each model implementation has its own `{model_implementation}Requirements.txt` found in the `/models` directory. Install the dependencies for the models you'd like to run. See [Model Implementations and Model Keys](#model-implementations-and-model-keys) for details.
+2. Per model implementation dependencies. Each model implementation has its own `{model_implementation}_requirements.txt` found in the `/models` directory. Install the dependencies for the models you'd like to run. See [Model Implementations and Model Keys](#model-implementations-and-model-keys) for details.
     ```
     pip install -r models/{model_implementation}_requirements.txt
     ```
@@ -45,9 +45,24 @@ A backend service for ScribeAR to generate transcriptions from a WAV audio strea
     ```
 3. Coverage results can be found in `htmlcov` folder
 
+**Linting**
+
+1. Ensure that you have installed global dependencies dependencies
+
+2. 
+   * For a single file:
+        ```
+        pylint [path_to_file]
+        ```
+   * For all `.py` files in source control
+        ```
+        pylint $(git ls-files '*.py')
+        ```
+
+
 **Implementing a new model**
 
-1. Implement `WhisperModelBase`. See `/modelBases/whisper_model_base.py` for required methods and usage.
+1. Implement `TranscriptionModelBase`. See `/model_bases/transcription_model_base.py` for required methods and usage.
     * Other model bases found in `/model_bases` can be helpful for implementing commonly used functions.
 2. Create `{model_implementation}_requirements.txt` and populate with python dependencies for your model.
 3. Associate [model key(s)](#model-implementations-and-model-keys) to your model implementation in `model_factory.py`. 
@@ -79,13 +94,13 @@ A backend service for ScribeAR to generate transcriptions from a WAV audio strea
 | Option      | Options                  | Description                                                                                                                                  |
 |-------------|--------------------------|----------------------------------------------------------------------------------------------------------------------------------------------|
 | `LOG_LEVEL` | `info`, `debug`, `trace` | Sets the verbosity of logging.                                                                                                               |
-| `API_KEY`   | `string`                 | The api key that must be passed to whisper-service in order to establish a connection. Should match `apiKey=` url parameter for node server. |
+| `API_KEY`   | `string`                 | The api key that must be passed to whisper-service in order to establish a connection. Should match `api_key=` url parameter for node server. |
 | `HOST`      | `ip address`             | The socket the whisper service will bind to. Use `0.0.0.0` to make available to local network, `127.0.0.1` to localhost only.                |
 | `PORT`      | `number`                 | Port number that whisper service will listen for connections on. Should match the port node server is trying to connect to.                  |
 
 ### Model Implementations and Model Keys
 
-Each model key (e.g. `faster-whisper:cpu-tiny-en`, `faster-whisper:gpu-tiny-en`) must be mapped to an model implementation (e.g. `faster-whisper`, `mock-transcription-durration`).
+Each model key (e.g. `faster-whisper:cpu-tiny-en`, `faster-whisper:gpu-tiny-en`) must be mapped to an model implementation (e.g. `faster-whisper`, `mock-transcription-duration`).
 
 The model key should be prefixed with the name of a model implementation.
 
@@ -98,5 +113,3 @@ Below is a table of model keys and model implementations
 | `mock_transcription_duration` | `mock-transcription-duration` | This model does not perform transcriptions. It returns the transcription blocks describing the duration of audio recieved |
 | `faster-whisper:gpu-tiny-en`  | `faster-whisper`              | Run faster whisper using tiny.en model with 2-dim local agreement in 1 second chunks on gpu                               |
 | `faster-whisper:cpu-tiny-en`  | `faster-whisper`              | Run faster whisper using tiny.en model with 2-dim local agreement in 3 second chunks on cpu                               |
-
-TODO: Perhaps make model key parsable so that changes for options don't require adding/modifying model key. For example: `faster-whisper:device=gpu,model=tiny.en,agreement=2,chunk=1`.
