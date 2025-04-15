@@ -1,11 +1,14 @@
+'''
+Entry point for whisper-service application.
+'''
 import uvicorn
-from load_config import loadConfig
-from create_server import createServer
-from model_factory import modelFactory
+from load_config import load_config
+from create_server import create_server
+from model_factory import model_factory
 
 if __name__ == '__main__':
-    config = loadConfig()
-    app = createServer(config, modelFactory)
+    config = load_config()
+    app = create_server(config, model_factory)
 
     uvicorn.run(
         app,
