@@ -2,9 +2,15 @@ name: node-server CI
 
 on:
   push:
+    branches:
+      - main
     paths:
       - node-server/**
   pull_request:
+    branches:
+      - main
+    paths:
+      - node-server/**
   workflow_dispatch:
 
 permissions:

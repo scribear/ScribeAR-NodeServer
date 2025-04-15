@@ -2,9 +2,15 @@ name: whisper-service CI
 
 on:
   push:
+    branches:
+      - main
     paths:
       - whisper-service/**
   pull_request:
+    branches:
+      - main
+    paths:
+      - whisper-service/**
   workflow_dispatch:
 
 permissions:
