@@ -15,7 +15,8 @@ function registerSink(
   ws: WebSocket,
 ) {
   const onTranscription = (block: BackendTranscriptBlock) => {
-    if (!fastify.requestAuthorizer.sessionTokenIsValid(req.query.sessionToken)) {
+    const isLocalhost = req.ip === '127.0.0.1' || req.ip === '::1';
+    if (!isLocalhost && !fastify.requestAuthorizer.sessionTokenIsValid(req.query.sessionToken)) {
       ws.close();
       return;
     }
@@ -47,8 +48,9 @@ function registerSource(
   req: FastifyRequest<{Querystring: {sessionToken?: string}}>,
   ws: WebSocket,
 ) {
+  const isLocalhost = req.ip === '127.0.0.1' || req.ip === '::1';
   ws.on('message', data => {
-    if (!fastify.requestAuthorizer.sessionTokenIsValid(req.query.sessionToken)) {
+    if (!isLocalhost && !fastify.requestAuthorizer.sessionTokenIsValid(req.query.sessionToken)) {
       ws.close();
       return;
     }
@@ -72,7 +74,11 @@ export default function websocketHandler(fastify: FastifyInstance) {
     registerSource(fastify, req, ws);
 
     ws.on('close', code => {
-      req.log.info({msg: 'Websocket closed', code});
+      req.log.info({ msg: 'Websocket closed', code });
+    });
+  
+    ws.on('error', err => {
+      req.log.error({ msg: 'WebSocket error', err });
     });
   });
 
