@@ -74,11 +74,11 @@ export default function websocketHandler(fastify: FastifyInstance) {
     registerSource(fastify, req, ws);
 
     ws.on('close', code => {
-      req.log.info({ msg: 'Websocket closed', code });
+      req.log.info({msg: 'Websocket closed', code});
     });
-  
+
     ws.on('error', err => {
-      req.log.error({ msg: 'WebSocket error', err });
+      req.log.error({msg: 'WebSocket error', err});
     });
   });
 
