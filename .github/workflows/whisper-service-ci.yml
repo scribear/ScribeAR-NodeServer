@@ -49,6 +49,6 @@ jobs:
         working-directory: "whisper-service"
         run: "pip install -r requirements.txt"
 
-      - name: Run tests
+      - name: Run linter
         working-directory: "whisper-service"
         run: pylint --disable=import-error $(git ls-files '*.py')
