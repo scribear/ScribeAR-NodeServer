@@ -7,8 +7,11 @@ BASE_DIR=$(pwd)
 
 # Ensure whisper service and node server are stopped when script exits
 stop_children() {
-  kill $PYTHON_PID || true
-  kill $NODE_PID || true
+  kill $PYTHON_PID
+  kill $NODE_PID
+
+	wait $PYTHON_PID
+	wait $NODE_PID
 }
 trap stop_children EXIT
 
@@ -18,19 +21,15 @@ mkdir -p $BASE_DIR/logs
 
 
 echo "Starting Whisper Service"
-/bin/bash -c "
-	cd $BASE_DIR/whisper-service; 
-	source .venv/bin/activate; 
-	python index.py 2>> $BASE_DIR/logs/whisper-service.log 
-" &
+cd $BASE_DIR/whisper-service; 
+source .venv/bin/activate; 
+python index.py 2>> $BASE_DIR/logs/whisper-service.log &
 PYTHON_PID=$!
 
 
 echo "Starting Node Server"
-/bin/bash -c "
-	cd $BASE_DIR/node-server; 
-	npm start >> $BASE_DIR/logs/node-server.log
-" &
+cd $BASE_DIR/node-server; 
+node ./build/src/index.js >> $BASE_DIR/logs/node-server.log &
 NODE_PID=$!
 sleep 15
 
