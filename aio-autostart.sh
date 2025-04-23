@@ -35,4 +35,4 @@ sleep 15
 
 
 echo "Launching Chrome"
-google-chrome "https://scribear.illinois.edu/v/latest/" --start-fullscreen
+google-chrome "https://scribear.illinois.edu/v/latest/?mode=kiosk&serverAddress=127.0.0.1:8080" --start-fullscreen
