@@ -77,7 +77,7 @@ export default function websocketHandler(fastify: FastifyInstance) {
     const expirationTimeout = setTimeout(() => {
       fastify.log.info('Session token expired, closing socket.');
       ws.close(3000);
-    }, expiration.getTime() - new Date().getTime() );
+    }, expiration.getTime() - new Date().getTime());
 
     ws.on('close', code => {
       clearTimeout(expirationTimeout);
