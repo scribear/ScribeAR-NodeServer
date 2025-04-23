@@ -111,5 +111,5 @@ Below is a table of model keys and model implementations
 | Model Key                     | Model Implementation          | Description                                                                                                               |
 |-------------------------------|-------------------------------|---------------------------------------------------------------------------------------------------------------------------|
 | `mock_transcription_duration` | `mock-transcription-duration` | This model does not perform transcriptions. It returns the transcription blocks describing the duration of audio recieved |
-| `faster-whisper:gpu-tiny-en`  | `faster-whisper`              | Run faster whisper using tiny.en model with 2-dim local agreement in 1 second chunks on gpu                               |
+| `faster-whisper:gpu-large-v3`  | `faster-whisper`              | Run faster whisper using large-v3 model with 2-dim local agreement in 3 second chunks on gpu                               |
 | `faster-whisper:cpu-tiny-en`  | `faster-whisper`              | Run faster whisper using tiny.en model with 2-dim local agreement in 3 second chunks on cpu                               |

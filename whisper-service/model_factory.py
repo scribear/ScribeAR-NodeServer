@@ -18,7 +18,7 @@ class ModelKey(StrEnum):
     Unique identifiers for supported whisper models
     '''
     MOCK_TRANSCRIPTION_DURATION = "mock-transcription-duration"
-    FASTER_WHISPER_GPU_TINY_EN = "faster-whisper:gpu-tiny-en"
+    FASTER_WHISPER_GPU_LARGE_V3 = "faster-whisper:gpu-large-v3"
     FASTER_WHISPER_CPU_TINY_EN = "faster-whisper:cpu-tiny-en"
 
 
@@ -37,14 +37,14 @@ def model_factory(model_key: ModelKey, websocket: WebSocket) -> TranscriptionMod
         case ModelKey.MOCK_TRANSCRIPTION_DURATION:
             from models.mock_transcription_duration import MockTranscribeDuration
             return MockTranscribeDuration(websocket)
-        case ModelKey.FASTER_WHISPER_GPU_TINY_EN:
+        case ModelKey.FASTER_WHISPER_GPU_LARGE_V3:
             from models.faster_whisper_model import FasterWhisperModel
             return FasterWhisperModel(
                 websocket,
-                'tiny.en',
+                'large-v3',
                 device='cuda',
                 local_agree_dim=2,
-                min_new_samples=FasterWhisperModel.SAMPLE_RATE
+                min_new_samples=FasterWhisperModel.SAMPLE_RATE * 3
             )
         case ModelKey.FASTER_WHISPER_CPU_TINY_EN:
             from models.faster_whisper_model import FasterWhisperModel
