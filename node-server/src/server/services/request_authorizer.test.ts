@@ -79,6 +79,24 @@ describe('Request authorizer', () => {
       expect(token0).not.toEqual(token1);
     });
 
+    it('returns correct session token expiration', () => {
+      const ra = setupTest();
+
+      const {sessionToken} = ra.createSessionToken();
+
+      const expires = ra.getSessionTokenExpiry(sessionToken);
+      expect(expires).toEqual(new Date(30_000));
+    });
+
+    it('returns undefined session token expiration for invalid session tokens', () => {
+      const ra = setupTest();
+
+      const {sessionToken} = ra.createSessionToken();
+
+      const expires = ra.getSessionTokenExpiry(sessionToken + 'invalid token');
+      expect(expires).toBeUndefined();
+    });
+
     it('generates new session tokens with correct expiration', () => {
       const ra = setupTest();
 

@@ -84,7 +84,7 @@ export default class RequestAuthorizer {
    * @returns expiry date or undefined if no valid session token found
    */
   getSessionTokenExpiry(sessionToken: string | undefined) {
-    if (typeof sessionToken !== 'string' || sessionToken in this._validSessionTokens) return undefined;
+    if (typeof sessionToken !== 'string' || !(sessionToken in this._validSessionTokens)) return undefined;
     return this._validSessionTokens[sessionToken];
   }
 

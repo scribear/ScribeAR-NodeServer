@@ -66,7 +66,7 @@ export default function websocketHandler(fastify: FastifyInstance) {
 
   fastify.get('/sink', {websocket: true, preHandler: fastify.requestAuthorizer.authorizeSessionToken}, (ws, req) => {
     const expiration = fastify.requestAuthorizer.getSessionTokenExpiry(req.query.sessionToken);
-    if (!expiration) {
+    if (expiration === undefined) {
       ws.close();
       return;
     }
@@ -75,6 +75,7 @@ export default function websocketHandler(fastify: FastifyInstance) {
 
     // Close websocket when session expires
     const expirationTimeout = setTimeout(() => {
+      fastify.log.info('Session token expired, closing socket.');
       ws.close(3000);
     }, new Date().getTime() - expiration.getTime());
 
