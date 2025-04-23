@@ -79,6 +79,16 @@ export default class RequestAuthorizer {
   }
 
   /**
+   * Fetches expiration time of given session token
+   * @param sessionToken session token to fetch
+   * @returns expiry date or undefined if no valid session token found
+   */
+  getSessionTokenExpiry(sessionToken: string | undefined) {
+    if (typeof sessionToken !== 'string' || sessionToken in this._validSessionTokens) return undefined;
+    return this._validSessionTokens[sessionToken];
+  }
+
+  /**
    * Checks if a given session token is valid
    * If authentication is disabled, this function always returns true
    * @param sessionToken session token to check

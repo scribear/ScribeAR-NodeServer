@@ -1,25 +1,15 @@
 import type {BackendTranscriptBlock} from '@server/services/transcription_engine.js';
-import {FastifyInstance, type FastifyRequest} from 'fastify';
+import {FastifyInstance} from 'fastify';
 import WebSocket from 'ws';
 
 /**
  * Register a websocket that listens for transcription events and forwards them
  * Closes websocket when session becomes invalid
  * @param fastify fastify webserver instance
- * @param req fastify request that initiated websocket connection
  * @param ws websocket to register
  */
-function registerSink(
-  fastify: FastifyInstance,
-  req: FastifyRequest<{Querystring: {sessionToken?: string}}>,
-  ws: WebSocket,
-) {
+function registerSink(fastify: FastifyInstance, ws: WebSocket) {
   const onTranscription = (block: BackendTranscriptBlock) => {
-    if (!fastify.requestAuthorizer.sessionTokenIsValid(req.query.sessionToken)) {
-      ws.close();
-      return;
-    }
-
     try {
       ws.send(JSON.stringify(block));
     } catch {
@@ -37,21 +27,11 @@ function registerSink(
 /**
  * Register a websocket that sends audio to be transcribed
  * Will throw error if a second websocket is registered before first has closed
- * Closes websocket when session becomes invalid
  * @param fastify fastify webserver instance
- * @param req fastify request that initiated websocket connection
  * @param ws websocket to register
  */
-function registerSource(
-  fastify: FastifyInstance,
-  req: FastifyRequest<{Querystring: {sessionToken?: string}}>,
-  ws: WebSocket,
-) {
+function registerSource(fastify: FastifyInstance, ws: WebSocket) {
   ws.on('message', data => {
-    if (!fastify.requestAuthorizer.sessionTokenIsValid(req.query.sessionToken)) {
-      ws.close();
-      return;
-    }
     if (data instanceof Buffer) {
       try {
         fastify.transcriptionEngine.sendAudioChunk(data);
@@ -68,8 +48,8 @@ function registerSource(
  */
 export default function websocketHandler(fastify: FastifyInstance) {
   fastify.get('/sourcesink', {websocket: true, preHandler: fastify.requestAuthorizer.authorizeLocalhost}, (ws, req) => {
-    registerSink(fastify, req, ws);
-    registerSource(fastify, req, ws);
+    registerSink(fastify, ws);
+    registerSource(fastify, ws);
 
     ws.on('close', code => {
       req.log.info({msg: 'Websocket closed', code});
@@ -77,7 +57,7 @@ export default function websocketHandler(fastify: FastifyInstance) {
   });
 
   fastify.get('/source', {websocket: true, preHandler: fastify.requestAuthorizer.authorizeLocalhost}, (ws, req) => {
-    registerSource(fastify, req, ws);
+    registerSource(fastify, ws);
 
     ws.on('close', code => {
       req.log.info({msg: 'Websocket closed', code});
@@ -85,9 +65,21 @@ export default function websocketHandler(fastify: FastifyInstance) {
   });
 
   fastify.get('/sink', {websocket: true, preHandler: fastify.requestAuthorizer.authorizeSessionToken}, (ws, req) => {
-    registerSink(fastify, req, ws);
+    const expiration = fastify.requestAuthorizer.getSessionTokenExpiry(req.query.sessionToken);
+    if (!expiration) {
+      ws.close();
+      return;
+    }
+
+    registerSink(fastify, ws);
+
+    // Close websocket when session expires
+    const expirationTimeout = setTimeout(() => {
+      ws.close(3000);
+    }, new Date().getTime() - expiration.getTime());
 
     ws.on('close', code => {
+      clearTimeout(expirationTimeout);
       req.log.info({msg: 'Websocket closed', code});
     });
   });
