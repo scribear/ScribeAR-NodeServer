@@ -30,9 +30,11 @@ export const SCHEMA = Type.Object({
   WHISPER_RECONNECT_INTERVAL: Type.Number({default: 1000}),
 
   REQUIRE_AUTH: Type.Boolean(),
-  ACCESS_TOKEN_REFRESH_INTERVAL_SEC: Type.Number({default: 5 * 60}),
-  ACCESS_TOKEN_VALID_PERIOD_SEC: Type.Number({default: 90 * 60}),
-  SESSION_LENGTH_SEC: Type.Number({default: 90 * 60}),
+  ACCESS_TOKEN_BYTES: Type.Number(),
+  ACCESS_TOKEN_REFRESH_INTERVAL_SEC: Type.Number(),
+  ACCESS_TOKEN_VALID_PERIOD_SEC: Type.Number(),
+  SESSION_TOKEN_BYTES: Type.Number(),
+  SESSION_LENGTH_SEC: Type.Number(),
 });
 
 export type ConfigType = Readonly<{
@@ -54,8 +56,10 @@ export type ConfigType = Readonly<{
   };
   auth: {
     required: boolean;
+    accessTokenBytes: number;
     accessTokenRefreshIntervalMS: number;
     accessTokenValidPeriodMS: number;
+    sessionTokenBytes: number;
     sessionLengthMS: number;
   };
 }>;

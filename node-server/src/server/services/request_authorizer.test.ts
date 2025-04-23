@@ -12,8 +12,10 @@ describe('Request authorizer', () => {
       {
         auth: {
           required: true,
+          accessTokenBytes: 8,
           accessTokenRefreshIntervalMS: 1_000,
           accessTokenValidPeriodMS: 10_000,
+          sessionTokenBytes: 32,
           sessionLengthMS: 30_000,
         },
       } as ConfigType,
@@ -198,7 +200,7 @@ describe('Request authorizer', () => {
 
   describe('Authorization override', it => {
     it('always accepts access tokens', () => {
-      const ra = new RequestAuthorizer({auth: {required: false}} as ConfigType, fakeLogger());
+      const ra = new RequestAuthorizer({auth: {required: false, accessTokenBytes: 8}} as ConfigType, fakeLogger());
 
       const {accessToken} = ra.getAccessToken();
 
@@ -207,7 +209,10 @@ describe('Request authorizer', () => {
     });
 
     it('always accepts session tokens', () => {
-      const ra = new RequestAuthorizer({auth: {required: false}} as ConfigType, fakeLogger());
+      const ra = new RequestAuthorizer(
+        {auth: {required: false, accessTokenBytes: 8, sessionTokenBytes: 32}} as ConfigType,
+        fakeLogger(),
+      );
 
       const {sessionToken} = ra.createSessionToken();
 
@@ -216,7 +221,7 @@ describe('Request authorizer', () => {
     });
 
     it('overrides localhost authorizer', async () => {
-      const ra = new RequestAuthorizer({auth: {required: false}} as ConfigType, fakeLogger());
+      const ra = new RequestAuthorizer({auth: {required: false, accessTokenBytes: 8}} as ConfigType, fakeLogger());
       const fastify = Fastify();
       fastify.decorate('requestAuthorizer', ra);
 
@@ -229,7 +234,10 @@ describe('Request authorizer', () => {
     });
 
     it('overrides session token authorizer', async () => {
-      const ra = new RequestAuthorizer({auth: {required: false}} as ConfigType, fakeLogger());
+      const ra = new RequestAuthorizer(
+        {auth: {required: false, accessTokenBytes: 8, sessionTokenBytes: 32}} as ConfigType,
+        fakeLogger(),
+      );
       const fastify = Fastify();
       fastify.decorate('requestAuthorizer', ra);
 

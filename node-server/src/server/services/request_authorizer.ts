@@ -29,7 +29,7 @@ export default class RequestAuthorizer {
   private _updateAccessTokens() {
     this._log.debug('Updating access tokens');
 
-    this._currentAccessToken = crypto.randomBytes(32).toString('base64url');
+    this._currentAccessToken = crypto.randomBytes(this._config.auth.accessTokenBytes).toString('base64url');
     const expiry = new Date(Date.now() + this._config.auth.accessTokenValidPeriodMS);
     this._validAccessTokens[this._currentAccessToken] = expiry;
     this._log.trace({msg: 'Created new access token', accessToken: this._currentAccessToken, expiry});
@@ -112,9 +112,9 @@ export default class RequestAuthorizer {
    * @returns created session token
    */
   createSessionToken() {
-    let sessionToken = crypto.randomBytes(32).toString('base64url');
+    let sessionToken = crypto.randomBytes(this._config.auth.sessionTokenBytes).toString('base64url');
     while (sessionToken in this._validSessionTokens) {
-      sessionToken = crypto.randomBytes(32).toString('base64url');
+      sessionToken = crypto.randomBytes(this._config.auth.sessionTokenBytes).toString('base64url');
     }
     const expires = new Date(Date.now() + this._config.auth.sessionLengthMS);
     this._validSessionTokens[sessionToken] = expires;

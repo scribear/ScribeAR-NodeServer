@@ -34,8 +34,10 @@ export default function loadConfig(path?: string): ConfigType {
     },
     auth: {
       required: env.REQUIRE_AUTH,
+      accessTokenBytes: env.ACCESS_TOKEN_BYTES,
       accessTokenRefreshIntervalMS: env.ACCESS_TOKEN_REFRESH_INTERVAL_SEC * 1000,
       accessTokenValidPeriodMS: env.ACCESS_TOKEN_VALID_PERIOD_SEC * 1000,
+      sessionTokenBytes: env.SESSION_TOKEN_BYTES,
       sessionLengthMS: env.SESSION_LENGTH_SEC * 1000,
     },
   });
