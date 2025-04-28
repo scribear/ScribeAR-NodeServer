@@ -4,6 +4,8 @@ on:
   push:
     paths:
       - whisper-service/**
+    branches:
+      - main
   pull_request:
   workflow_dispatch:
 

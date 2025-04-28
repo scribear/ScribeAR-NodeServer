@@ -4,6 +4,8 @@ on:
   push:
     paths:
       - node-server/**
+    branches:
+      - main
   pull_request:
   workflow_dispatch:
 
