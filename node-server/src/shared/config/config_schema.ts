@@ -23,6 +23,9 @@ export const SCHEMA = Type.Object({
 
   HOST: Type.String({default: 'localhost'}),
   PORT: Type.Number({default: 8000}),
+  USE_HTTPS: Type.Boolean({default: false}),
+  KEY_FILEPATH: Type.String({default: ''}),
+  CERTIFICATE_FILEPATH: Type.String({default: ''}),
   CORS_ORIGIN: Type.String(),
   SERVER_ADDRESS: Type.String(),
 
@@ -47,6 +50,9 @@ export type ConfigType = Readonly<{
   server: {
     host: string;
     port: number;
+    useHttps: boolean;
+    keyPath: string;
+    certificatePath: string;
     corsOrigin: string;
     serverAddress: string;
   };

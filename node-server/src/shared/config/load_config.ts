@@ -25,6 +25,9 @@ export default function loadConfig(path?: string): ConfigType {
     server: {
       host: env.HOST,
       port: env.PORT,
+      useHttps: env.USE_HTTPS,
+      keyPath: env.KEY_FILEPATH,
+      certificatePath: env.CERTIFICATE_FILEPATH,
       corsOrigin: env.CORS_ORIGIN,
       serverAddress: env.SERVER_ADDRESS,
     },
