@@ -1,11 +1,10 @@
 import type {ConfigType} from '@shared/config/config_schema.js';
 import type {Logger} from '@shared/logger/logger.js';
-import type {DoneFuncWithErrOrRes, FastifyReply, FastifyRequest} from 'fastify';
 import crypto from 'node:crypto';
 
 const MAX_TIMESTAMP = 8640000000000000;
 
-export default class RequestAuthorizer {
+export default class TokenService {
   private _validAccessTokens: {[key: string]: Date} = {};
   private _validSessionTokens: {[key: string]: Date} = {};
   private _currentAccessToken = '';
@@ -21,9 +20,6 @@ export default class RequestAuthorizer {
         this._updateAccessTokens();
       }, this._config.auth.accessTokenRefreshIntervalSec * 1000);
     }
-
-    this.authorizeLocalhost = this.authorizeLocalhost.bind(this);
-    this.authorizeSessionToken = this.authorizeSessionToken.bind(this);
   }
 
   /**
@@ -151,42 +147,5 @@ export default class RequestAuthorizer {
     this._log.trace({msg: 'Creating new session token', sessionToken, expires});
 
     return {sessionToken, expires};
-  }
-
-  /**
-   * Fastify preHandler hook to accept/reject localhost connections
-   * @param request Fastify request object
-   * @param reply Fastify reply object
-   * @param done Fastify done function
-   */
-  authorizeLocalhost(
-    request: FastifyRequest<{Querystring: {sessionToken?: string}}>,
-    reply: FastifyReply,
-    done: DoneFuncWithErrOrRes,
-  ) {
-    if (!this._config.auth.required) return done();
-    if (request.socket.remoteAddress === '127.0.0.1') return done();
-
-    reply.code(403);
-    done(new Error('Unauthorized'));
-  }
-
-  /**
-   * Fastify preHandler hook to accept/reject localhost and session token connections
-   * @param request Fastify request object
-   * @param reply Fastify reply object
-   * @param done Fastify done function
-   */
-  authorizeSessionToken(
-    request: FastifyRequest<{Querystring: {sessionToken?: string}}>,
-    reply: FastifyReply,
-    done: DoneFuncWithErrOrRes,
-  ) {
-    if (!this._config.auth.required) return done();
-    if (request.socket.remoteAddress === '127.0.0.1') return done();
-    if (this.sessionTokenIsValid(request.query.sessionToken)) return done();
-
-    reply.code(403);
-    done(new Error('Unauthorized'));
   }
 }

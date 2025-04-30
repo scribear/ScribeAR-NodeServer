@@ -1,12 +1,11 @@
 import {describe, expect, vi} from 'vitest';
-import RequestAuthorizer from './request_authorizer.js';
+import RequestAuthorizer from './token_service.js';
 import fakeLogger from '../../../test/fakes/fake_logger.js';
 import type {ConfigType} from '@shared/config/config_schema.js';
-import Fastify from 'fastify';
 
 const MAX_TIMESTAMP = 8640000000000000;
 
-describe('Request authorizer', () => {
+describe('Token service', () => {
   function setupTest() {
     vi.useFakeTimers();
     vi.setSystemTime(new Date(0));
@@ -136,71 +135,15 @@ describe('Request authorizer', () => {
     });
   });
 
-  describe('Fastify authentication middleware', it => {
-    function setupFastify() {
-      const ra = setupTest();
-      vi.useRealTimers();
-
-      const fastify = Fastify();
-      fastify.decorate('requestAuthorizer', ra);
-
-      fastify.get('/localhost', {preHandler: fastify.requestAuthorizer.authorizeLocalhost}, (req, reply) => {
-        return reply.code(200).send();
-      });
-      fastify.get('/sessionToken', {preHandler: fastify.requestAuthorizer.authorizeSessionToken}, (req, reply) => {
-        return reply.code(200).send();
-      });
-
-      return fastify;
-    }
-
-    it('localhost authorizer accepts localhost request', async () => {
-      const fastify = setupFastify();
-
-      const result = await fastify.inject({method: 'GET', url: '/localhost', remoteAddress: '127.0.0.1'});
-
-      expect(result.statusCode).toBe(200);
-    });
-
-    it('localhost authorizer rejects non localhost request', async () => {
-      const fastify = setupFastify();
-
-      const result = await fastify.inject({method: 'GET', url: '/localhost', remoteAddress: '192.168.0.1'});
-
-      expect(result.statusCode).toBe(403);
-    });
-
-    it('session token authorizer accepts localhost request', async () => {
-      const fastify = setupFastify();
-
-      const result = await fastify.inject({method: 'GET', url: '/sessionToken', remoteAddress: '127.0.0.1'});
-
-      expect(result.statusCode).toBe(200);
-    });
-
-    it('session token authorizer rejects non localhost request without session token', async () => {
-      const fastify = setupFastify();
-
-      const result = await fastify.inject({method: 'GET', url: '/sessionToken', remoteAddress: '192.168.0.1'});
-
-      expect(result.statusCode).toBe(403);
-    });
-
-    it('session token authorizer accepts non localhost request with valid session token', async () => {
-      const fastify = setupFastify();
-
-      const {sessionToken} = fastify.requestAuthorizer.createSessionToken();
-      const result = await fastify.inject({
-        method: 'GET',
-        url: `/sessionToken?sessionToken=${sessionToken}`,
-        remoteAddress: '192.168.0.1',
-      });
-
-      expect(result.statusCode).toBe(200);
-    });
-  });
-
   describe('Authorization override', it => {
+    it('generates access tokens with max expiry', () => {
+      const ra = new RequestAuthorizer({auth: {required: false}} as unknown as ConfigType, fakeLogger());
+
+      const {expires} = ra.getAccessToken();
+
+      expect(expires).toEqual(new Date(MAX_TIMESTAMP));
+    });
+
     it('always accepts access tokens', () => {
       const ra = new RequestAuthorizer({auth: {required: false}} as unknown as ConfigType, fakeLogger());
 
@@ -210,6 +153,14 @@ describe('Request authorizer', () => {
       expect(ra.accessTokenIsValid('invalid')).toBeTruthy();
     });
 
+    it('generates session tokens with max expiry', () => {
+      const ra = new RequestAuthorizer({auth: {required: false}} as unknown as ConfigType, fakeLogger());
+
+      const {sessionToken} = ra.createSessionToken();
+
+      expect(ra.getSessionTokenExpiry(sessionToken)).toEqual(new Date(MAX_TIMESTAMP));
+    });
+
     it('always accepts session tokens', () => {
       const ra = new RequestAuthorizer({auth: {required: false}} as unknown as ConfigType, fakeLogger());
 
@@ -217,33 +168,6 @@ describe('Request authorizer', () => {
 
       expect(ra.accessTokenIsValid(sessionToken)).toBeTruthy();
       expect(ra.sessionTokenIsValid('invalid')).toBeTruthy();
-      expect(ra.getSessionTokenExpiry(sessionToken)).toEqual(new Date(MAX_TIMESTAMP));
-    });
-
-    it('overrides localhost authorizer', async () => {
-      const ra = new RequestAuthorizer({auth: {required: false}} as unknown as ConfigType, fakeLogger());
-      const fastify = Fastify();
-      fastify.decorate('requestAuthorizer', ra);
-
-      fastify.get('/localhost', {preHandler: fastify.requestAuthorizer.authorizeLocalhost}, (req, reply) => {
-        return reply.code(200).send();
-      });
-      const result = await fastify.inject({method: 'GET', url: '/localhost', remoteAddress: '192.168.0.1'});
-
-      expect(result.statusCode).toBe(200);
-    });
-
-    it('overrides session token authorizer', async () => {
-      const ra = new RequestAuthorizer({auth: {required: false}} as unknown as ConfigType, fakeLogger());
-      const fastify = Fastify();
-      fastify.decorate('requestAuthorizer', ra);
-
-      fastify.get('/sessionToken', {preHandler: fastify.requestAuthorizer.authorizeSessionToken}, (req, reply) => {
-        return reply.code(200).send();
-      });
-      const result = await fastify.inject({method: 'GET', url: '/sessionToken', remoteAddress: '192.168.0.1'});
-
-      expect(result.statusCode).toBe(200);
     });
   });
 });

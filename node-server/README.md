@@ -106,7 +106,8 @@ The following options can be configured via environment variable.
 | `WHISPER_RECONNECT_INTERVAL` | `number` | `1` | Number of seconds to wait before attempting to reconnect to whisper service. Server implements exponential backoff, so interval will double each time connection fails up to a maximum of 30 seconds. |
 |**Authentication Options**|||
 | `REQUIRE_AUTH` | `true`, `false` | `true` | If `true`, requires authentication to connect to node server api, otherwise no authentication is used. See [Authentication](#authentication) for details. |
-| `ACCESS_TOKEN_REFRESH_INTERVAL_SEC` | `number` | Required if `REQUIRED_AUTH=true`, no default value  | Number of seconds to wait before generating a new refresh token. See [Authentication](#authentication) for details. |
+| `SOURCE_TOKEN` | `string` | Required if `REQUIRED_AUTH=true`, no default value | The key used by frontend to connect as audio source. See [Authentication](#authentication) for details. |
+| `ACCESS_TOKEN_REFRESH_INTERVAL_SEC` | `number` | Required if `REQUIRED_AUTH=true`, no default value | Number of seconds to wait before generating a new refresh token. See [Authentication](#authentication) for details. |
 | `ACCESS_TOKEN_BYTES` | `number` | Required if `REQUIRED_AUTH=true`, no default value | The number of random bytes used to generate access tokens |
 | `ACCESS_TOKEN_VALID_PERIOD_SEC` | `number` | Required if `REQUIRED_AUTH=true`, no default value | Number of seconds a newly generated refresh token is valid for. See [Authentication](#authentication) for details. |
 | `SESSION_TOKEN_BYTES` | `number` | Required if `REQUIRED_AUTH=true`, no default value | The number of random bytes used to generate session tokens |

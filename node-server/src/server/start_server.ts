@@ -8,14 +8,18 @@ import fastifyWebsocket from '@fastify/websocket';
 import websocketHandler from './routes/websocket_handler.js';
 import fastifyHelmet from '@fastify/helmet';
 import fastifySensible from '@fastify/sensible';
-import RequestAuthorizer from './services/request_authorizer.js';
+import TokenService from './services/token_service.js';
 import accessTokenHandler from './routes/session_auth_handler.js';
 
 declare module 'fastify' {
   export interface FastifyInstance {
     config: ConfigType;
     transcriptionEngine: TranscriptionEngine;
-    requestAuthorizer: RequestAuthorizer;
+    tokenService: TokenService;
+  }
+
+  export interface FastifyRequest {
+    authorizationExpiryTimeout?: number;
   }
 }
 
@@ -51,7 +55,7 @@ export default function createServer(config: ConfigType, logger: Logger) {
   // Make configuration and transcription engine avaiable on fastify instance (dependency injection)
   fastify.decorate('config', config);
   fastify.decorate('transcriptionEngine', new TranscriptionEngine(config, logger));
-  fastify.decorate('requestAuthorizer', new RequestAuthorizer(config, logger));
+  fastify.decorate('tokenService', new TokenService(config, logger));
 
   // Register routes
   fastify.register(websocketHandler);

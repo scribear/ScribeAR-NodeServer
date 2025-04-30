@@ -1,3 +1,4 @@
+import createAuthorizeHook, {Identities} from '@server/hooks/create_authorize_hook.js';
 import type {BackendTranscriptBlock} from '@server/services/transcription_engine.js';
 import {FastifyInstance} from 'fastify';
 import WebSocket from 'ws';
@@ -47,44 +48,62 @@ function registerSource(fastify: FastifyInstance, ws: WebSocket) {
  * @param fastify
  */
 export default function websocketHandler(fastify: FastifyInstance) {
-  fastify.get('/sourcesink', {websocket: true, preHandler: fastify.requestAuthorizer.authorizeLocalhost}, (ws, req) => {
-    registerSink(fastify, ws);
-    registerSource(fastify, ws);
+  fastify.get(
+    '/sourcesink',
+    {
+      websocket: true,
+      preHandler: createAuthorizeHook(fastify.config, fastify.tokenService, [Identities.SourceToken]),
+    },
+    (ws, req) => {
+      registerSink(fastify, ws);
+      registerSource(fastify, ws);
 
-    ws.on('close', code => {
-      req.log.info({msg: 'Websocket closed', code});
-    });
-  });
+      ws.on('close', code => {
+        req.log.info({msg: 'Websocket closed', code});
+      });
+    },
+  );
 
-  fastify.get('/source', {websocket: true, preHandler: fastify.requestAuthorizer.authorizeLocalhost}, (ws, req) => {
-    registerSource(fastify, ws);
+  fastify.get(
+    '/source',
+    {
+      websocket: true,
+      preHandler: createAuthorizeHook(fastify.config, fastify.tokenService, [Identities.SourceToken]),
+    },
+    (ws, req) => {
+      registerSource(fastify, ws);
 
-    ws.on('close', code => {
-      req.log.info({msg: 'Websocket closed', code});
-    });
-  });
+      ws.on('close', code => {
+        req.log.info({msg: 'Websocket closed', code});
+      });
+    },
+  );
 
-  fastify.get('/sink', {websocket: true, preHandler: fastify.requestAuthorizer.authorizeSessionToken}, (ws, req) => {
-    const expiration = fastify.requestAuthorizer.getSessionTokenExpiry(req.query.sessionToken);
-    if (expiration === undefined) {
-      ws.close();
-      return;
-    }
+  fastify.get(
+    '/sink',
+    {
+      websocket: true,
+      preHandler: createAuthorizeHook(fastify.config, fastify.tokenService, [
+        Identities.SourceToken,
+        Identities.SessionToken,
+      ]),
+    },
+    (ws, req) => {
+      registerSink(fastify, ws);
 
-    registerSink(fastify, ws);
+      // Close websocket when session expires
+      let expirationTimeout: NodeJS.Timeout | undefined;
+      if (req.authorizationExpiryTimeout) {
+        expirationTimeout = setTimeout(() => {
+          fastify.log.info('Session token expired, closing socket.');
+          ws.close(3000);
+        }, req.authorizationExpiryTimeout);
+      }
 
-    // Close websocket when session expires
-    let expirationTimeout: NodeJS.Timeout | undefined;
-    if (fastify.config.auth.required) {
-      expirationTimeout = setTimeout(() => {
-        fastify.log.info('Session token expired, closing socket.');
-        ws.close(3000);
-      }, expiration.getTime() - new Date().getTime());
-    }
-
-    ws.on('close', code => {
-      clearTimeout(expirationTimeout);
-      req.log.info({msg: 'Websocket closed', code});
-    });
-  });
+      ws.on('close', code => {
+        clearTimeout(expirationTimeout);
+        req.log.info({msg: 'Websocket closed', code});
+      });
+    },
+  );
 }

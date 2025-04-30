@@ -50,6 +50,7 @@ const AUTH_CONFIG = Type.Union([
   }),
   Type.Object({
     REQUIRE_AUTH: Type.Const(true),
+    SOURCE_TOKEN: Type.String({minLength: 1}),
     ACCESS_TOKEN_BYTES: Type.Number({minimum: 1}),
     ACCESS_TOKEN_REFRESH_INTERVAL_SEC: Type.Number({minimum: 1}),
     ACCESS_TOKEN_VALID_PERIOD_SEC: Type.Number({minimum: 1}),
@@ -91,6 +92,7 @@ export type ConfigType = Readonly<{
     | {required: false}
     | {
         required: true;
+        sourceToken: string;
         accessTokenBytes: number;
         accessTokenRefreshIntervalSec: number;
         accessTokenValidPeriodSec: number;
