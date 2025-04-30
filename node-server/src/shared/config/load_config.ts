@@ -1,6 +1,7 @@
+import {Ajv} from 'ajv';
 import type {Static} from '@sinclair/typebox';
 import {NodeEnv, SCHEMA, type ConfigType} from './config_schema.js';
-import envSchema from 'env-schema';
+import {configDotenv} from 'dotenv';
 
 /**
  * Loads environment configuration file from privated path
@@ -9,10 +10,23 @@ import envSchema from 'env-schema';
  * @returns configuration
  */
 export default function loadConfig(path?: string): ConfigType {
-  const env = envSchema<Static<typeof SCHEMA>>({
-    dotenv: {path},
-    schema: SCHEMA,
+  // Load from .env file
+  configDotenv({path});
+
+  const ajv = new Ajv({
+    allErrors: true,
+    useDefaults: true,
+    coerceTypes: true,
+    allowUnionTypes: true,
   });
+
+  const env = Object.assign({}, process.env) as unknown as Static<typeof SCHEMA>;
+  const valid = ajv.validate(SCHEMA, env);
+  if (!valid) {
+    const error = new Error('Invalid Configuration! ' + ajv.errorsText());
+    (error as unknown as {errors: unknown}).errors = ajv.errors;
+    throw error;
+  }
 
   // Application configuration object
   const config: ConfigType = Object.freeze({
@@ -27,21 +41,21 @@ export default function loadConfig(path?: string): ConfigType {
       port: env.PORT,
       useHttps: env.USE_HTTPS,
       keyPath: env.KEY_FILEPATH,
-      certificatePath: env.CERTIFICATE_FILEPATH,
+      certPath: env.CERTIFICATE_FILEPATH,
       corsOrigin: env.CORS_ORIGIN,
       serverAddress: env.SERVER_ADDRESS,
     },
     whisper: {
       endpoint: env.WHISPER_SERVICE_ENDPOINT,
-      reconnectInterval: env.WHISPER_RECONNECT_INTERVAL_SEC * 1000,
+      reconnectIntervalSec: env.WHISPER_RECONNECT_INTERVAL_SEC,
     },
     auth: {
       required: env.REQUIRE_AUTH,
       accessTokenBytes: env.ACCESS_TOKEN_BYTES,
-      accessTokenRefreshIntervalMS: env.ACCESS_TOKEN_REFRESH_INTERVAL_SEC * 1000,
-      accessTokenValidPeriodMS: env.ACCESS_TOKEN_VALID_PERIOD_SEC * 1000,
+      accessTokenRefreshIntervalSec: env.ACCESS_TOKEN_REFRESH_INTERVAL_SEC,
+      accessTokenValidPeriodSec: env.ACCESS_TOKEN_VALID_PERIOD_SEC,
       sessionTokenBytes: env.SESSION_TOKEN_BYTES,
-      sessionLengthMS: env.SESSION_LENGTH_SEC * 1000,
+      sessionLengthSec: env.SESSION_LENGTH_SEC,
     },
   });
 

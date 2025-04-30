@@ -30,7 +30,7 @@ export default function createServer(config: ConfigType, logger: Logger) {
       loggerInstance: logger,
       https: {
         key: fs.readFileSync(config.server.keyPath),
-        cert: fs.readFileSync(config.server.certificatePath),
+        cert: fs.readFileSync(config.server.certPath),
       },
     }) as unknown as FastifyInstance;
   } else {

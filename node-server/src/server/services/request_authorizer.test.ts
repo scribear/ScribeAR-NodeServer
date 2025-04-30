@@ -13,10 +13,10 @@ describe('Request authorizer', () => {
         auth: {
           required: true,
           accessTokenBytes: 8,
-          accessTokenRefreshIntervalMS: 1_000,
-          accessTokenValidPeriodMS: 10_000,
+          accessTokenRefreshIntervalSec: 1,
+          accessTokenValidPeriodSec: 10,
           sessionTokenBytes: 32,
-          sessionLengthMS: 30_000,
+          sessionLengthSec: 30,
         },
       } as ConfigType,
       fakeLogger(),
@@ -200,7 +200,10 @@ describe('Request authorizer', () => {
 
   describe('Authorization override', it => {
     it('always accepts access tokens', () => {
-      const ra = new RequestAuthorizer({auth: {required: false, accessTokenBytes: 8}} as ConfigType, fakeLogger());
+      const ra = new RequestAuthorizer(
+        {auth: {required: false, accessTokenBytes: 8}} as unknown as ConfigType,
+        fakeLogger(),
+      );
 
       const {accessToken} = ra.getAccessToken();
 
@@ -210,7 +213,7 @@ describe('Request authorizer', () => {
 
     it('always accepts session tokens', () => {
       const ra = new RequestAuthorizer(
-        {auth: {required: false, accessTokenBytes: 8, sessionTokenBytes: 32}} as ConfigType,
+        {auth: {required: false, accessTokenBytes: 8, sessionTokenBytes: 32}} as unknown as ConfigType,
         fakeLogger(),
       );
 
@@ -221,7 +224,10 @@ describe('Request authorizer', () => {
     });
 
     it('overrides localhost authorizer', async () => {
-      const ra = new RequestAuthorizer({auth: {required: false, accessTokenBytes: 8}} as ConfigType, fakeLogger());
+      const ra = new RequestAuthorizer(
+        {auth: {required: false, accessTokenBytes: 8}} as unknown as ConfigType,
+        fakeLogger(),
+      );
       const fastify = Fastify();
       fastify.decorate('requestAuthorizer', ra);
 
@@ -235,7 +241,7 @@ describe('Request authorizer', () => {
 
     it('overrides session token authorizer', async () => {
       const ra = new RequestAuthorizer(
-        {auth: {required: false, accessTokenBytes: 8, sessionTokenBytes: 32}} as ConfigType,
+        {auth: {required: false, accessTokenBytes: 8, sessionTokenBytes: 32}} as unknown as ConfigType,
         fakeLogger(),
       );
       const fastify = Fastify();
