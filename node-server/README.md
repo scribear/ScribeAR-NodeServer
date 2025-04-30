@@ -4,7 +4,7 @@ A backend service for ScribeAR to handle authenticating and rebroadcasting trans
 
 # Getting Started
 
-node-server can either be run via Docker or locally. See [Running via Docker](#running-via-docker) to run with docker or [Running Locally](#running-locally) to run locally. If you'd like to develop node-server, see [Developing](#developing).
+node-server can either be run via Docker or locally. See [Running via Docker](#running-via-docker) to run with docker or [Running Locally](#running-locally) to run locally. If you'd like to develop node-server, see [Developing](#developing). Additional documentation can be found at [Documentation](#documentation).
 
 # Usage
 
@@ -27,7 +27,7 @@ node-server can either be run via Docker or locally. See [Running via Docker](#r
 ### Running Server
 
 1. Ensure that the app is installed and configured locally (See [Local Setup](#local-setup)) 
-2. If you want to run node-server
+2. Run node-server
     ```
     npm start
     ```
@@ -46,12 +46,40 @@ You can run node-server in development mode for easy to read logs and so that th
 
 ## Running Unit Tests
 
-Unit tests are run via `vitest` with code coverage via istanbul. See `vitest.config.ts` for test configuration.
+Unit tests are run via `vitest` with code coverage via istanbul. See `vitest.config.ts` for test configuration. A Github Action runs unit tests when a PR is created, make sure tests pass before creating a PR.
 
 1. Ensure dependencies are installed (See [Local Setup](#local-setup))
 2. Run tests
     ```
     npm run test
+    ```
+
+## Running Linter
+
+`eslint` is used to lint code to ensure consistent code style. A Github Action runs linter when a PR is created to enforce this, make sure linter is successful before creating a PR.
+
+1. Ensure that the app is installed and configured locally (See [Local Setup](#local-setup))
+2. Run linter
+    ```
+    npm run lint
+    ```
+3. `eslint` can attempt to automatically fix linter issues
+    ```
+    npm run fix
+    ```
+
+## Build Docker Container
+
+To test your local changes in a Docker container you can build it locally. A Github Action builds Docker container when a PR is created, make sure build is successful before creating a PR.
+
+1. Ensure you have Docker installed.
+2. Build container
+    ```
+    docker -t scribear-node-server -f ./Dockerfile .
+    ```
+3. Run container (additional configuration can be passed in via `--env` flag)
+    ```
+    docker run --env WHISPER_SERVICE_ENDPOINT=[your-whisper-service-endpoint] --env HOST=0.0.0.0 -p 8080:8080 scribear-node-server:latest
     ```
 
 # Documentation
