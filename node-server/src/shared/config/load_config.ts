@@ -1,4 +1,5 @@
 import {Ajv} from 'ajv';
+import {Value} from '@sinclair/typebox/value';
 import type {Static} from '@sinclair/typebox';
 import {NodeEnv, SCHEMA, type ConfigType} from './config_schema.js';
 import {configDotenv} from 'dotenv';
@@ -20,7 +21,8 @@ export default function loadConfig(path?: string): ConfigType {
     allowUnionTypes: true,
   });
 
-  const env = Object.assign({}, process.env) as unknown as Static<typeof SCHEMA>;
+  const defaults = Value.Default(SCHEMA, {}) as Static<typeof SCHEMA>;
+  const env = Object.assign(defaults, process.env);
   const valid = ajv.validate(SCHEMA, env);
   if (!valid) {
     const error = new Error('Invalid Configuration! ' + ajv.errorsText());
@@ -57,7 +59,7 @@ export default function loadConfig(path?: string): ConfigType {
       sessionTokenBytes: env.SESSION_TOKEN_BYTES,
       sessionLengthSec: env.SESSION_LENGTH_SEC,
     },
-  });
+  }) as unknown as ConfigType;
 
   return config;
 }

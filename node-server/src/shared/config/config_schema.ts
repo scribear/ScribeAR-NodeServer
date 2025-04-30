@@ -31,8 +31,6 @@ const SERVER_CONFIG = Type.Object({
 const HTTPS_CONFIG = Type.Union([
   Type.Object({
     USE_HTTPS: Type.Literal(false),
-    KEY_FILEPATH: Type.Any(),
-    CERTIFICATE_FILEPATH: Type.Any(),
   }),
   Type.Object({
     USE_HTTPS: Type.Literal(true),
@@ -49,11 +47,6 @@ const WHISPER_CONFIG = Type.Object({
 const AUTH_CONFIG = Type.Union([
   Type.Object({
     REQUIRE_AUTH: Type.Const(false),
-    ACCESS_TOKEN_BYTES: Type.Any(),
-    ACCESS_TOKEN_REFRESH_INTERVAL_SEC: Type.Any(),
-    ACCESS_TOKEN_VALID_PERIOD_SEC: Type.Any(),
-    SESSION_TOKEN_BYTES: Type.Any(),
-    SESSION_LENGTH_SEC: Type.Any(),
   }),
   Type.Object({
     REQUIRE_AUTH: Type.Const(true),
