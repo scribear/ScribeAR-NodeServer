@@ -71,7 +71,7 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           context: ./whisper-service
-          file: Dockerfile_CPU
+          file: ./whisper-service/Dockerfile_CPU
           push: false
 
   build-cuda-container-whisper-service:
@@ -90,5 +90,5 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           context: ./whisper-service
-          file: Dockerfile_CUDA
+          file: ./whisper-service/Dockerfile_CUDA
           push: false
