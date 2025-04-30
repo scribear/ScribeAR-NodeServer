@@ -10,13 +10,13 @@ import asyncio
 from typing import Annotated, Callable
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect, Query
 from model_bases.transcription_model_base import TranscriptionModelBase
-from model_factory import ModelKey, model_factory
+from model_factory import model_factory
 from load_config import AppConfig, load_config
 
 
 def create_server(
     config: AppConfig,
-    model_factory_func: Callable[[ModelKey, WebSocket], TranscriptionModelBase]
+    model_factory_func: Callable[[str, WebSocket], TranscriptionModelBase]
 ) -> FastAPI:
     '''
     Instanciates FastAPI webserver.
