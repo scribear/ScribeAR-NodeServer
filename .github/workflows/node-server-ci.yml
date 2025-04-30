@@ -29,13 +29,13 @@ jobs:
           node-version: ${{ env.node-version }}
 
       - name: Install dependencies
-        working-directory: 'node-server'
+        working-directory: "node-server"
         run: npm ci
 
       - name: Run tests
-        working-directory: 'node-server'
+        working-directory: "node-server"
         run: npm run ci-test
-      
+
   lint-node-server:
     runs-on: ubuntu-latest
     steps:
@@ -48,11 +48,11 @@ jobs:
           node-version: ${{ env.node-version }}
 
       - name: Install dependencies
-        working-directory: 'node-server'
-        run: npm ci  
+        working-directory: "node-server"
+        run: npm ci
 
       - name: Run linter
-        working-directory: 'node-server'
+        working-directory: "node-server"
         run: npm run lint
 
   build-node-server:
@@ -67,16 +67,19 @@ jobs:
           node-version: ${{ env.node-version }}
 
       - name: Install dependencies
-        working-directory: 'node-server'
+        working-directory: "node-server"
         run: npm ci
-  
+
       - name: Run build
-        working-directory: 'node-server'
+        working-directory: "node-server"
         run: npm run build
 
   build-container-node-server:
     runs-on: ubuntu-latest
     steps:
+      - name: Set up Git repository
+        uses: actions/checkout@v4
+
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
 

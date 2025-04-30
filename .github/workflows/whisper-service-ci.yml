@@ -55,10 +55,12 @@ jobs:
         working-directory: "whisper-service"
         run: pylint --disable=import-error $(git ls-files '*.py')
 
-
   build-cpu-container-whisper-service:
     runs-on: ubuntu-latest
     steps:
+      - name: Set up Git repository
+        uses: actions/checkout@v4
+
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
 
@@ -75,6 +77,9 @@ jobs:
   build-cuda-container-whisper-service:
     runs-on: ubuntu-latest
     steps:
+      - name: Set up Git repository
+        uses: actions/checkout@v4
+
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
 
@@ -87,4 +92,3 @@ jobs:
           context: ./whisper-service
           file: Dockerfile_CUDA
           push: false
-        
