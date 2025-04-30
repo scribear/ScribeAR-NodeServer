@@ -69,6 +69,13 @@ export default class RequestAuthorizer {
    * @returns object containg access token and expiry date
    */
   getAccessToken() {
+    if (!this._config.auth.required) {
+      return {
+        accessToken: this._currentAccessToken,
+        expires: new Date(MAX_TIMESTAMP),
+      };
+    }
+
     return {
       accessToken: this._currentAccessToken,
       expires: this._validAccessTokens[this._currentAccessToken],
@@ -100,6 +107,8 @@ export default class RequestAuthorizer {
    * @returns expiry date or undefined if no valid session token found
    */
   getSessionTokenExpiry(sessionToken: string | undefined) {
+    if (!this._config.auth.required) return new Date(MAX_TIMESTAMP);
+
     if (typeof sessionToken !== 'string' || !(sessionToken in this._validSessionTokens)) return undefined;
     return this._validSessionTokens[sessionToken];
   }

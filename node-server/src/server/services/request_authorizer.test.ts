@@ -4,6 +4,8 @@ import fakeLogger from '../../../test/fakes/fake_logger.js';
 import type {ConfigType} from '@shared/config/config_schema.js';
 import Fastify from 'fastify';
 
+const MAX_TIMESTAMP = 8640000000000000;
+
 describe('Request authorizer', () => {
   function setupTest() {
     vi.useFakeTimers();
@@ -200,10 +202,7 @@ describe('Request authorizer', () => {
 
   describe('Authorization override', it => {
     it('always accepts access tokens', () => {
-      const ra = new RequestAuthorizer(
-        {auth: {required: false, accessTokenBytes: 8}} as unknown as ConfigType,
-        fakeLogger(),
-      );
+      const ra = new RequestAuthorizer({auth: {required: false}} as unknown as ConfigType, fakeLogger());
 
       const {accessToken} = ra.getAccessToken();
 
@@ -212,22 +211,17 @@ describe('Request authorizer', () => {
     });
 
     it('always accepts session tokens', () => {
-      const ra = new RequestAuthorizer(
-        {auth: {required: false, accessTokenBytes: 8, sessionTokenBytes: 32}} as unknown as ConfigType,
-        fakeLogger(),
-      );
+      const ra = new RequestAuthorizer({auth: {required: false}} as unknown as ConfigType, fakeLogger());
 
       const {sessionToken} = ra.createSessionToken();
 
       expect(ra.accessTokenIsValid(sessionToken)).toBeTruthy();
       expect(ra.sessionTokenIsValid('invalid')).toBeTruthy();
+      expect(ra.getSessionTokenExpiry(sessionToken)).toEqual(new Date(MAX_TIMESTAMP));
     });
 
     it('overrides localhost authorizer', async () => {
-      const ra = new RequestAuthorizer(
-        {auth: {required: false, accessTokenBytes: 8}} as unknown as ConfigType,
-        fakeLogger(),
-      );
+      const ra = new RequestAuthorizer({auth: {required: false}} as unknown as ConfigType, fakeLogger());
       const fastify = Fastify();
       fastify.decorate('requestAuthorizer', ra);
 
@@ -240,10 +234,7 @@ describe('Request authorizer', () => {
     });
 
     it('overrides session token authorizer', async () => {
-      const ra = new RequestAuthorizer(
-        {auth: {required: false, accessTokenBytes: 8, sessionTokenBytes: 32}} as unknown as ConfigType,
-        fakeLogger(),
-      );
+      const ra = new RequestAuthorizer({auth: {required: false}} as unknown as ConfigType, fakeLogger());
       const fastify = Fastify();
       fastify.decorate('requestAuthorizer', ra);
 
