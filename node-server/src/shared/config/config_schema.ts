@@ -17,27 +17,27 @@ export enum LogLevel {
 
 // Define environment schema
 export const SCHEMA = Type.Object({
-  NODE_ENV: Type.Enum(NodeEnv),
+  NODE_ENV: Type.Enum(NodeEnv, {default: NodeEnv.Production}),
 
-  LOG_LEVEL: Type.Enum(LogLevel),
+  LOG_LEVEL: Type.Enum(LogLevel, {default: LogLevel.Info}),
 
   HOST: Type.String({default: 'localhost'}),
-  PORT: Type.Number({default: 8000}),
+  PORT: Type.Number({default: 8080}),
   USE_HTTPS: Type.Boolean({default: false}),
   KEY_FILEPATH: Type.String({default: ''}),
   CERTIFICATE_FILEPATH: Type.String({default: ''}),
-  CORS_ORIGIN: Type.String(),
-  SERVER_ADDRESS: Type.String(),
+  CORS_ORIGIN: Type.String({default: '*'}),
+  SERVER_ADDRESS: Type.String({default: '127.0.0.1:8080'}),
 
   WHISPER_SERVICE_ENDPOINT: Type.String(),
-  WHISPER_RECONNECT_INTERVAL: Type.Number({default: 1000}),
+  WHISPER_RECONNECT_INTERVAL_SEC: Type.Number({default: 1}),
 
-  REQUIRE_AUTH: Type.Boolean(),
-  ACCESS_TOKEN_BYTES: Type.Number(),
-  ACCESS_TOKEN_REFRESH_INTERVAL_SEC: Type.Number(),
-  ACCESS_TOKEN_VALID_PERIOD_SEC: Type.Number(),
-  SESSION_TOKEN_BYTES: Type.Number(),
-  SESSION_LENGTH_SEC: Type.Number(),
+  REQUIRE_AUTH: Type.Boolean({default: true}),
+  ACCESS_TOKEN_BYTES: Type.Number({default: 32}),
+  ACCESS_TOKEN_REFRESH_INTERVAL_SEC: Type.Number({default: 150}),
+  ACCESS_TOKEN_VALID_PERIOD_SEC: Type.Number({default: 300}),
+  SESSION_TOKEN_BYTES: Type.Number({default: 8}),
+  SESSION_LENGTH_SEC: Type.Number({default: 5400}),
 });
 
 export type ConfigType = Readonly<{

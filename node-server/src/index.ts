@@ -24,6 +24,20 @@ async function init() {
     logger.fatal({msg: 'Failed to start webserver', err});
     throw err; // terminate if fails to start
   }
+
+  // Close connection and server on SIGTERM/SIGINT for a graceful exit
+  process.on('SIGTERM', async () => {
+    logger.info('SIGTERM received, exiting gracefully.');
+    await server.close();
+    // eslint-disable-next-line n/no-process-exit
+    process.exit();
+  });
+  process.on('SIGINT', async () => {
+    logger.info('SIGINT received, exiting gracefully.');
+    await server.close();
+    // eslint-disable-next-line n/no-process-exit
+    process.exit();
+  });
 }
 
 await init();

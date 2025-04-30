@@ -33,7 +33,7 @@ export default function loadConfig(path?: string): ConfigType {
     },
     whisper: {
       endpoint: env.WHISPER_SERVICE_ENDPOINT,
-      reconnectInterval: env.WHISPER_RECONNECT_INTERVAL,
+      reconnectInterval: env.WHISPER_RECONNECT_INTERVAL_SEC * 1000,
     },
     auth: {
       required: env.REQUIRE_AUTH,
