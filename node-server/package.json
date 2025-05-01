@@ -7,7 +7,7 @@
     "lint": "eslint",
     "clean": "gts clean",
     "fix": "eslint --fix",
-    "dev": "tsc-watch --compiler ts-patch/compiler/tsc.js --onSuccess 'node ./build/src/index.js' | pino-pretty",
+    "dev": "tsc-watch --compiler ts-patch/compiler/tsc.js --onSuccess \"node build/src/index.js\" | pino-pretty",
     "pretest": "npm run lint",
     "test": "vitest --ui --coverage",
     "ci-test": "vitest run",
