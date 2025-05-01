@@ -1,9 +1,10 @@
 import type {ConfigType} from '@shared/config/config_schema.js';
 import type {Logger} from '@shared/logger/logger.js';
-import type {DoneFuncWithErrOrRes, FastifyReply, FastifyRequest} from 'fastify';
 import crypto from 'node:crypto';
 
-export default class RequestAuthorizer {
+const MAX_TIMESTAMP = 8640000000000000;
+
+export default class TokenService {
   private _validAccessTokens: {[key: string]: Date} = {};
   private _validSessionTokens: {[key: string]: Date} = {};
   private _currentAccessToken = '';
@@ -14,12 +15,11 @@ export default class RequestAuthorizer {
   ) {
     this._updateAccessTokens();
 
-    setInterval(() => {
-      this._updateAccessTokens();
-    }, this._config.auth.accessTokenRefreshIntervalMS);
-
-    this.authorizeLocalhost = this.authorizeLocalhost.bind(this);
-    this.authorizeSessionToken = this.authorizeSessionToken.bind(this);
+    if (this._config.auth.required) {
+      setInterval(() => {
+        this._updateAccessTokens();
+      }, this._config.auth.accessTokenRefreshIntervalSec * 1000);
+    }
   }
 
   /**
@@ -27,10 +27,11 @@ export default class RequestAuthorizer {
    * Updates this._currentAccessToken, this._validAccessTokens, and this._validSessionTokens
    */
   private _updateAccessTokens() {
+    if (!this._config.auth.required) return;
     this._log.debug('Updating access tokens');
 
     this._currentAccessToken = crypto.randomBytes(this._config.auth.accessTokenBytes).toString('base64url');
-    const expiry = new Date(Date.now() + this._config.auth.accessTokenValidPeriodMS);
+    const expiry = new Date(Date.now() + this._config.auth.accessTokenValidPeriodSec * 1000);
     this._validAccessTokens[this._currentAccessToken] = expiry;
     this._log.trace({msg: 'Created new access token', accessToken: this._currentAccessToken, expiry});
 
@@ -49,10 +50,28 @@ export default class RequestAuthorizer {
   }
 
   /**
+   * Computes the expiration date of a new session token
+   * @returns expiry date
+   */
+  private _computeNewSessionExpiry() {
+    if (!this._config.auth.required) {
+      return new Date(MAX_TIMESTAMP);
+    }
+    return new Date(Date.now() + this._config.auth.sessionLengthSec * 1000);
+  }
+
+  /**
    * Gets the currently active access token and the expiration of said access token
    * @returns object containg access token and expiry date
    */
   getAccessToken() {
+    if (!this._config.auth.required) {
+      return {
+        accessToken: this._currentAccessToken,
+        expires: new Date(MAX_TIMESTAMP),
+      };
+    }
+
     return {
       accessToken: this._currentAccessToken,
       expires: this._validAccessTokens[this._currentAccessToken],
@@ -84,6 +103,8 @@ export default class RequestAuthorizer {
    * @returns expiry date or undefined if no valid session token found
    */
   getSessionTokenExpiry(sessionToken: string | undefined) {
+    if (!this._config.auth.required) return new Date(MAX_TIMESTAMP);
+
     if (typeof sessionToken !== 'string' || !(sessionToken in this._validSessionTokens)) return undefined;
     return this._validSessionTokens[sessionToken];
   }
@@ -112,52 +133,19 @@ export default class RequestAuthorizer {
    * @returns created session token
    */
   createSessionToken() {
+    if (!this._config.auth.required) {
+      return {sessionToken: '', expires: this._computeNewSessionExpiry()};
+    }
     let sessionToken = crypto.randomBytes(this._config.auth.sessionTokenBytes).toString('base64url');
     while (sessionToken in this._validSessionTokens) {
       sessionToken = crypto.randomBytes(this._config.auth.sessionTokenBytes).toString('base64url');
     }
-    const expires = new Date(Date.now() + this._config.auth.sessionLengthMS);
+
+    const expires = this._computeNewSessionExpiry();
     this._validSessionTokens[sessionToken] = expires;
 
     this._log.trace({msg: 'Creating new session token', sessionToken, expires});
 
     return {sessionToken, expires};
-  }
-
-  /**
-   * Fastify preHandler hook to accept/reject localhost connections
-   * @param request Fastify request object
-   * @param reply Fastify reply object
-   * @param done Fastify done function
-   */
-  authorizeLocalhost(
-    request: FastifyRequest<{Querystring: {sessionToken?: string}}>,
-    reply: FastifyReply,
-    done: DoneFuncWithErrOrRes,
-  ) {
-    if (!this._config.auth.required) return done();
-    if (request.socket.remoteAddress === '127.0.0.1') return done();
-
-    reply.code(403);
-    done(new Error('Unauthorized'));
-  }
-
-  /**
-   * Fastify preHandler hook to accept/reject localhost and session token connections
-   * @param request Fastify request object
-   * @param reply Fastify reply object
-   * @param done Fastify done function
-   */
-  authorizeSessionToken(
-    request: FastifyRequest<{Querystring: {sessionToken?: string}}>,
-    reply: FastifyReply,
-    done: DoneFuncWithErrOrRes,
-  ) {
-    if (!this._config.auth.required) return done();
-    if (request.socket.remoteAddress === '127.0.0.1') return done();
-    if (this.sessionTokenIsValid(request.query.sessionToken)) return done();
-
-    reply.code(403);
-    done(new Error('Unauthorized'));
   }
 }

@@ -32,7 +32,7 @@ describe('Transcription engine', it => {
       {
         whisper: {
           endpoint: address,
-          reconnectInterval: 1_000,
+          reconnectIntervalSec: 1,
         },
       } as ConfigType,
       fakeLogger(),

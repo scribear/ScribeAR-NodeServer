@@ -22,13 +22,14 @@ export type AudioTranscriptEvents = {
 export default class TranscriptionEngine extends TypedEmitter<AudioTranscriptEvents> {
   private _ws?: WebSocket;
   private _reconnectInterval: number;
+  private _resetReconnectIntervalTimeout?: NodeJS.Timeout;
 
   constructor(
     private _config: ConfigType,
     private _log: Logger,
   ) {
     super();
-    this._reconnectInterval = this._config.whisper.reconnectInterval;
+    this._reconnectInterval = this._config.whisper.reconnectIntervalSec * 1000;
     this._connectWhisperService();
   }
 
@@ -36,6 +37,7 @@ export default class TranscriptionEngine extends TypedEmitter<AudioTranscriptEve
    * Connects to whisper service via websocket connection
    */
   private _connectWhisperService() {
+    clearTimeout(this._resetReconnectIntervalTimeout);
     this._ws = new WebSocket(this._config.whisper.endpoint);
 
     this._ws.on('error', err => {
@@ -51,7 +53,10 @@ export default class TranscriptionEngine extends TypedEmitter<AudioTranscriptEve
 
     this._ws.on('open', () => {
       this._log.info('Connected to whisper service');
-      this._reconnectInterval = this._config.whisper.reconnectInterval;
+
+      this._resetReconnectIntervalTimeout = setTimeout(() => {
+        this._reconnectInterval = this._config.whisper.reconnectIntervalSec * 1000;
+      }, 30_000);
     });
 
     this._ws.on('message', data => {
