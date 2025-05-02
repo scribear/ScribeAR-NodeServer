@@ -1,9 +1,7 @@
 name: 'scribear-server'
 services:
   whisper-service:
-    build:
-      context: ./whisper-service
-      dockerfile: Dockerfile_CUDA
+    image: scribear/whisper-service-cuda:main
     environment:
       - LOG_LEVEL=${LOG_LEVEL}
       - API_KEY=${API_KEY}
@@ -12,9 +10,7 @@ services:
     restart: unless-stopped
 
   node-server:
-    depends_on:
-      whisper-service:
-        condition: service_healthy
+    image: scribear/node-server:main
     build:
       context: ./node-server
       dockerfile: Dockerfile

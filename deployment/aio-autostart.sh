@@ -21,14 +21,14 @@ mkdir -p $BASE_DIR/logs
 
 
 echo "Starting Whisper Service"
-cd $BASE_DIR/whisper-service; 
+cd $BASE_DIR/../whisper-service; 
 source .venv/bin/activate; 
 python index.py 2>> $BASE_DIR/logs/whisper-service.log &
 PYTHON_PID=$!
 
 
 echo "Starting Node Server"
-cd $BASE_DIR/node-server; 
+cd $BASE_DIR/../node-server; 
 node ./build/src/index.js >> $BASE_DIR/logs/node-server.log &
 NODE_PID=$!
 sleep 15

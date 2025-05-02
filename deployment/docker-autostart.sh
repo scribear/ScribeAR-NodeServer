@@ -1,10 +1,14 @@
 #!/bin/bash
 set -e
 
-NODE_PORT=8080
-FRONTEND_PORT=3000
-SOURCE_TOKEN="CHANGEME"
-SCRIBEAR_URL="http://192.168.10.160:${FRONTEND_PORT}"
+source .env
+if [ $WHISPER_SERVICE_CUDA = 'true' ]; then
+  echo Starting services with CUDA enabled for whisper-service
+  docker compose -f ./compose_cuda.yaml up -d
+else  
+  echo Starting services without CUDA
+  docker compose -f ./compose_cpu.yaml up -d
+fi
 
 until [ "$(curl --max-time 1 -s -w '%{http_code}' -o /dev/null "${SCRIBEAR_URL}")" -eq 200 ]
 do
