@@ -10,6 +10,7 @@ import fastifyHelmet from '@fastify/helmet';
 import fastifySensible from '@fastify/sensible';
 import TokenService from './services/token_service.js';
 import accessTokenHandler from './routes/session_auth_handler.js';
+import healthcheckHandler from './routes/healthcheck_handler.js';
 
 declare module 'fastify' {
   export interface FastifyInstance {
@@ -60,6 +61,7 @@ export default function createServer(config: ConfigType, logger: Logger) {
   // Register routes
   fastify.register(websocketHandler);
   fastify.register(accessTokenHandler);
+  fastify.register(healthcheckHandler);
 
   return fastify;
 }

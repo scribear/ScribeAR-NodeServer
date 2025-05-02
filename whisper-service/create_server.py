@@ -31,6 +31,10 @@ def create_server(
     '''
     fastapi_app = FastAPI()
 
+    @fastapi_app.get("/healthcheck")
+    def healthcheck():
+        return 'ok'
+
     @fastapi_app.websocket("/whisper")
     async def whisper(
         websocket: WebSocket,
