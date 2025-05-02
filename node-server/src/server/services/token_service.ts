@@ -7,7 +7,7 @@ const MAX_TIMESTAMP = 8640000000000000;
 export default class TokenService {
   private _validAccessTokens: {[key: string]: Date} = {};
   private _validSessionTokens: {[key: string]: Date} = {};
-  private _currentAccessToken = '';
+  private _currentAccessToken = ' ';
 
   constructor(
     private _config: ConfigType,
@@ -134,7 +134,7 @@ export default class TokenService {
    */
   createSessionToken() {
     if (!this._config.auth.required) {
-      return {sessionToken: '', expires: this._computeNewSessionExpiry()};
+      return {sessionToken: ' ', expires: this._computeNewSessionExpiry()};
     }
     let sessionToken = crypto.randomBytes(this._config.auth.sessionTokenBytes).toString('base64url');
     while (sessionToken in this._validSessionTokens) {

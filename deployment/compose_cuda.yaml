@@ -1,18 +1,26 @@
 name: 'scribear-server'
 services:
+  whisper-service:
+    image: scribear/whisper-service-cuda:main
+    environment:
+      - LOG_LEVEL=${LOG_LEVEL}
+      - API_KEY=${API_KEY}
+    expose:
+      - 80
+    restart: unless-stopped
+
   node-server:
+    image: scribear/node-server:main
     build:
       context: ./node-server
       dockerfile: Dockerfile
     environment:
       - NODE_ENV=${NODE_ENV}
       - LOG_LEVEL=${LOG_LEVEL}
-      - HOST=0.0.0.0
-      - PORT=8080
       - USE_HTTPS=${USE_HTTPS}
       - CORS_ORIGIN=${CORS_ORIGIN}
       - SERVER_ADDRESS=${SERVER_ADDRESS}
-      - WHISPER_SERVICE_ENDPOINT=ws://whisper-service:8000/whisper?api_key=${API_KEY}&model_key=${MODEL_KEY}
+      - WHISPER_SERVICE_ENDPOINT=ws://whisper-service:80/whisper?api_key=${API_KEY}&model_key=${MODEL_KEY}
       - WHISPER_RECONNECT_INTERVAL_SEC=${WHISPER_RECONNECT_INTERVAL_SEC}
       - REQUIRE_AUTH=${REQUIRE_AUTH}
       - SOURCE_TOKEN=${SOURCE_TOKEN}
@@ -22,21 +30,18 @@ services:
       - SESSION_TOKEN_BYTES=${SESSION_TOKEN_BYTES}
       - SESSION_LENGTH_SEC=${SESSION_LENGTH_SEC}
     ports:
-      - ${PORT}:8080
+      - ${NODE_PORT}:80
     volumes:
       - ${KEY_FILEPATH:-/dev/null}:/app/cert/key.pem
       - ${CERTIFICATE_FILEPATH:-/dev/null}:/app/cert/key.pem
     restart: unless-stopped
 
-  whisper-service:
-    build:
-      context: ./whisper-service
-      dockerfile: Dockerfile_CUDA
-    environment:
-      - LOG_LEVEL=${LOG_LEVEL}
-      - API_KEY=${API_KEY}
-      - HOST=0.0.0.0
-      - PORT=8000
-    expose:
-      - 8000
-    restart: unless-stopped
+  frontend:
+    depends_on:
+      whisper-service:
+        condition: service_healthy
+      node-server:
+        condition: service_healthy
+    ports:
+      - ${FRONTEND_PORT}:80
+    image: scribear/frontend:master
