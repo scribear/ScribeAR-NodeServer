@@ -1,6 +1,11 @@
 #!/bin/bash
 set -e
 
+NODE_PORT=8080
+FRONTEND_PORT=3000
+SOURCE_TOKEN="CHANGEME"
+SCRIBEAR_URL="http://192.168.10.160:${FRONTEND_PORT}"
+
 SCRIPT_DIR=$(dirname $0)
 cd $SCRIPT_DIR
 BASE_DIR=$(pwd)
@@ -32,11 +37,6 @@ cd $BASE_DIR/../node-server;
 node ./build/src/index.js >> $BASE_DIR/logs/node-server.log &
 NODE_PID=$!
 sleep 15
-
-NODE_PORT=8080
-FRONTEND_PORT=3000
-SOURCE_TOKEN="CHANGEME"
-SCRIBEAR_URL="http://192.168.10.160:${FRONTEND_PORT}"
 
 until [ "$(curl --max-time 1 -s -w '%{http_code}' -o /dev/null "${SCRIBEAR_URL}")" -eq 200 ]
 do
