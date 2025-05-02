@@ -42,25 +42,3 @@ async function init() {
 }
 
 await init();
-
-// import {Type} from '@sinclair/typebox';
-// import {Value} from '@sinclair/typebox/value';
-
-// const TEST = Type.Intersect([
-//   Type.Union([
-//     Type.Object({
-//       flag: Type.Literal(false),
-//     }),
-//     Type.Object({
-//       flag: Type.Literal(true),
-//       key: Type.String({minLength: 1}),
-//     }),
-//   ]),
-//   Type.Object({
-//     other: Type.String(),
-//   }),
-// ]);
-
-// const env = Value.Convert(TEST, {flag: false, key: '90', other: 'asdf'});
-
-// console.log(env);
