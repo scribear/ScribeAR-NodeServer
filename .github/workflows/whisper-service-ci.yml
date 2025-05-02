@@ -21,7 +21,7 @@ env:
   DOCKERHUB_ORG: 'scribear'
 
 jobs:
-  test-whisper-service:
+  test-lint-whisper-service:
     runs-on: ubuntu-latest
     steps:
       - name: Set up Git repository
@@ -40,26 +40,12 @@ jobs:
         working-directory: "whisper-service"
         run: pytest --cov=.
 
-  lint-whisper-service:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Set up Git repository
-        uses: actions/checkout@v4
-
-      - name: Set up Python ${{ env.PYTHON_VERSION }}
-        uses: actions/setup-python@v4
-        with:
-          python-version: ${{ env.PYTHON_VERSION }}
-
-      - name: Install dependencies
-        working-directory: "whisper-service"
-        run: "pip install -r requirements.txt"
-
       - name: Run tests
         working-directory: "whisper-service"
         run: pylint --disable=import-error $(git ls-files '*.py')
 
   build-cpu-container-whisper-service:
+    needs: test-lint-whisper-service
     runs-on: ubuntu-latest
     steps:
       - name: Set up Git repository
@@ -107,6 +93,7 @@ jobs:
             ARG GITSHA1=${{ github.sha }}
 
   build-cuda-container-whisper-service:
+    needs: test-lint-whisper-service
     runs-on: ubuntu-latest
     steps:
       - name: Set up Git repository

@@ -21,45 +21,7 @@ env:
   DOCKERHUB_ORG: 'scribear'
 
 jobs:
-  test-node-server:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Set up Git repository
-        uses: actions/checkout@v4
-
-      - name: Set up Node.js ${{ env.NODE_VERSION }}
-        uses: actions/setup-node@v4
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-
-      - name: Install dependencies
-        working-directory: "node-server"
-        run: npm ci
-
-      - name: Run tests
-        working-directory: "node-server"
-        run: npm run ci-test
-
-  lint-node-server:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Set up Git repository
-        uses: actions/checkout@v4
-
-      - name: Set up Node.js ${{ env.NODE_VERSION }}
-        uses: actions/setup-node@v4
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-
-      - name: Install dependencies
-        working-directory: "node-server"
-        run: npm ci
-
-      - name: Run linter
-        working-directory: "node-server"
-        run: npm run lint
-
-  build-node-server:
+  build-test-lint-node-server:
     runs-on: ubuntu-latest
     steps:
       - name: Set up Git repository
@@ -78,7 +40,16 @@ jobs:
         working-directory: "node-server"
         run: npm run build
 
+      - name: Run tests
+        working-directory: "node-server"
+        run: npm run ci-test
+
+      - name: Run linter
+        working-directory: "node-server"
+        run: npm run lint
+
   build-container-node-server:
+    needs: build-test-lint-node-server
     runs-on: ubuntu-latest
     steps:
       - name: Set up Git repository
