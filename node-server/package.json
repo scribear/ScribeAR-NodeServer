@@ -1,25 +1,23 @@
 {
-  "name": "scribear-backend",
+  "name": "scribear-node-server",
   "version": "0.0.0",
-  "main": "build/index.js",
+  "main": "build/src/index.js",
   "type": "module",
   "scripts": {
     "lint": "eslint",
+    "lint:fix": "eslint --fix",
     "clean": "gts clean",
-    "fix": "eslint --fix",
     "dev": "tsc-watch --compiler ts-patch/compiler/tsc.js --onSuccess \"node build/src/index.js\" | pino-pretty",
-    "pretest": "npm run lint",
-    "test": "vitest --ui --coverage",
-    "ci-test": "vitest run",
+    "test:dev": "vitest --ui --coverage",
+    "test:ci": "vitest run",
     "build": "tspc",
     "prestart": "npm run build",
     "start": "node ./build/src/index.js"
   },
-  "author": "bwu1324",
-  "license": "MIT",
+  "author": "scribear",
   "description": "",
   "engines": {
-    "node": "^20.0.0"
+    "node": ">=20.0.0"
   },
   "devDependencies": {
     "@eslint/compat": "1.2.6",

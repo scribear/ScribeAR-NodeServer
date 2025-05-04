@@ -40,9 +40,9 @@ jobs:
         working-directory: "whisper-service"
         run: pytest --cov=.
 
-      - name: Run tests
+      - name: Run linter
         working-directory: "whisper-service"
-        run: pylint --disable=import-error $(git ls-files '*.py')
+        run: pylint $(git ls-files '*.py')
 
   build-cpu-container-whisper-service:
     needs: test-lint-whisper-service

@@ -5,9 +5,11 @@ Classes:
     TranscriptionSegment
     LocalAgreeModelBase
 '''
+from abc import abstractmethod
 import math
 import numpy.typing as npt
 from model_bases.buffer_audio_model_base import BufferAudioModelBase
+from utils.config_dict_contains import config_dict_contains_int
 
 
 class TranscriptionSegment:
@@ -95,6 +97,24 @@ class LocalAgreeModelBase(BufferAudioModelBase):
         self.local_agree_dim = local_agree_dim
         self.prev_transcriptions: list[list[TranscriptionSegment]] = []
 
+    @staticmethod
+    def validate_config(config):
+        '''
+        Should check if loaded JSON config is valid. Called model is instantiated.
+        Throw an error if provided config is not valid
+        Remember to call valididate_config for any model_bases to ensure configuration 
+        for model_bases is checked as well. 
+        e.g. if you use LocalAgreeModelBase: config = LocalAgreeModelBase.validate(config)
+
+        Parameters:
+        config (dict): Parsed JSON config from server device_config.json. Guaranteed to be a dict.
+
+        Returns:
+        config (TranscriptionModelConfig): Validated config object
+        '''
+        config_dict_contains_int(config, 'local_agree_dim', minimum=1)
+        return config
+
     def load_model(self) -> None:
         '''
         Should load model into memory to be ready for transcription.
@@ -109,6 +129,7 @@ class LocalAgreeModelBase(BufferAudioModelBase):
         '''
         raise NotImplementedError('Must implement per model')
 
+    @abstractmethod
     async def transcribe_audio(
         self,
         audio_segment: npt.NDArray,

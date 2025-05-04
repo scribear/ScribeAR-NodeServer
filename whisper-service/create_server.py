@@ -10,21 +10,24 @@ import asyncio
 from typing import Annotated, Callable
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect, Query
 from model_bases.transcription_model_base import TranscriptionModelBase
-from model_factory import model_factory
-from load_config import AppConfig, load_config
+from load_config import AppConfig
+from init_device_config import DeviceConfig
 
 
 def create_server(
     config: AppConfig,
-    model_factory_func: Callable[[str, WebSocket], TranscriptionModelBase]
+    device_config: DeviceConfig,
+    model_factory_func: Callable[[DeviceConfig,
+                                  str, WebSocket], TranscriptionModelBase]
 ) -> FastAPI:
     '''
     Instanciates FastAPI webserver.
 
     Parameters:
-    config              (Config)  : Application configuration object
-    model_factory_func  (function): Function that takes in a modelKey and a WebSocket and 
-                                    returns the corresponding model implementation
+    config              (AppConfig)   : Application configuration object
+    device_config       (DeviceConfig): Application device configuration object
+    model_factory_func  (function)    : Function that takes in a modelKey and a WebSocket and 
+                                          returns the corresponding model implementation
 
     Returns:
     FastAPI webserver
@@ -56,7 +59,11 @@ def create_server(
             return
 
         # Intanciate and setup requested model
-        transcription_model = model_factory_func(model_key, websocket)
+        transcription_model = model_factory_func(
+            device_config,
+            model_key,
+            websocket
+        )
         transcription_model.load_model()
 
         # Send any audio chunks to transcription model
@@ -69,8 +76,3 @@ def create_server(
                 return
 
     return fastapi_app
-
-
-if __name__ == 'create_server':
-    app_config = load_config()
-    app = create_server(app_config, model_factory)

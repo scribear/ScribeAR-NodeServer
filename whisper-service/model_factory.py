@@ -1,48 +1,36 @@
 '''
-Function for instantiating specified model
+Function for instantiating a specified model
 
 Functions:
     model_factory
-
-Classes:
-    ModelKey
 '''
-# pylint: disable=import-outside-toplevel
 from fastapi import WebSocket
 from model_bases.transcription_model_base import TranscriptionModelBase
+from model_implementations.import_model_implementation import import_model_implementation
+from init_device_config import DeviceConfig
 
-def model_factory(model_key: str, websocket: WebSocket) -> TranscriptionModelBase:
+
+def model_factory(
+    device_config: DeviceConfig,
+    model_key: str,
+    websocket: WebSocket
+) -> TranscriptionModelBase:
     '''
-    Instantiates model with corresponding ModelKey.
+    Instantiates model with corresponding model_key.
 
     Parameters:
-    model_key   (str)      : Unique identifier for model to instantiate
-    websocket   (WebSocket): Websocket requesting model
+    device_config (DeviceConfig): Device config object
+    model_key     (str)         : Unique identifier for model to instantiate
+    websocket     (WebSocket)   : Websocket requesting model
 
     Returns:
     A TranscriptionModelBase instance
     '''
-    match model_key:
-        case 'mock-transcription-duration':
-            from models.mock_transcription_duration import MockTranscribeDuration
-            return MockTranscribeDuration(websocket)
-        case 'faster-whisper:gpu-large-v3':
-            from models.faster_whisper_model import FasterWhisperModel
-            return FasterWhisperModel(
-                websocket,
-                'large-v3',
-                device='cuda',
-                local_agree_dim=2,
-                min_new_samples=FasterWhisperModel.SAMPLE_RATE * 3
-            )
-        case "faster-whisper:cpu-tiny-en":
-            from models.faster_whisper_model import FasterWhisperModel
-            return FasterWhisperModel(
-                websocket,
-                'tiny.en',
-                device='cpu',
-                local_agree_dim=2,
-                min_new_samples=FasterWhisperModel.SAMPLE_RATE * 3
-            )
-        case _:
-            raise KeyError('No model matching model_key')
+    if model_key not in device_config:
+        raise KeyError('No model matching model_key')
+
+    implementation = import_model_implementation(
+        device_config[model_key]['implementation_id']
+    )
+
+    return implementation(websocket, device_config[model_key]['implementation_configuration'])
