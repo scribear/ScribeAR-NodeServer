@@ -42,7 +42,7 @@ jobs:
 
       - name: Run tests
         working-directory: "node-server"
-        run: npm run ci-test
+        run: npm run test:ci
 
       - name: Run linter
         working-directory: "node-server"
