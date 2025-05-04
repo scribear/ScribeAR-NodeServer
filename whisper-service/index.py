@@ -10,16 +10,16 @@ from init_device_config import init_device_config
 
 config = load_config()
 device_config = init_device_config('device_config.json')
-app = create_server(config, device_config, model_factory)
+APP = create_server(config, device_config, model_factory)
 
 if __name__ == '__main__':
     dev_mode = len(sys.argv) > 1 and sys.argv[1] == '--dev'
 
     if dev_mode:
-        app = 'index:app'
+        APP = 'index:app'
 
     uvicorn.run(
-        app,
+        APP,
         log_level=config.LOG_LEVEL,
         port=config.PORT,
         host=config.HOST,
