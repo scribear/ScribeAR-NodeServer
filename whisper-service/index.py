@@ -17,7 +17,7 @@ if __name__ == '__main__':
     dev_mode = len(sys.argv) > 1 and sys.argv[1] == '--dev'
 
     if dev_mode:
-        APP = 'index:app'
+        APP = 'index:APP'
 
     uvicorn.run(
         APP,
