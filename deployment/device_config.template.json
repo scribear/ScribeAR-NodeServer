@@ -1,0 +1,22 @@
+{
+  "mock_transcription_duration": {
+    "display_name": "Sanity Test",
+    "description": "Returns how many seconds of audio was received by whisper service.",
+    "implementation_id": "mock_transcription_duration",
+    "implementation_configuration": {},
+    "available_features": {}
+  },
+  "faster-whisper:cpu-tiny-en": {
+    "display_name": "Tiny Faster Whisper",
+    "description": "Faster Whisper implementation of Open AI Whisper tiny.en model.",
+    "implementation_id": "faster_whisper",
+    "implementation_configuration": {
+      "model": "tiny.en",
+      "device": "cpu",
+      "local_agree_dim": 2,
+      "min_new_samples": 48000,
+      "max_segment_samples": 480000
+    },
+    "available_features": {}
+  }
+}

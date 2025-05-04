@@ -1,4 +1,3 @@
-import fs from 'fs';
 import Fastify, {type FastifyInstance} from 'fastify';
 import fastifyCors from '@fastify/cors';
 import type {ConfigType} from '../shared/config/config_schema.js';
@@ -29,18 +28,7 @@ declare module 'fastify' {
  * @returns created fastify server
  */
 export default function createServer(config: ConfigType, logger: Logger) {
-  let fastify: FastifyInstance;
-  if (config.server.useHttps) {
-    fastify = Fastify({
-      loggerInstance: logger,
-      https: {
-        key: fs.readFileSync(config.server.keyPath),
-        cert: fs.readFileSync(config.server.certPath),
-      },
-    }) as unknown as FastifyInstance;
-  } else {
-    fastify = Fastify({loggerInstance: logger}) as unknown as FastifyInstance;
-  }
+  const fastify = Fastify({loggerInstance: logger}) as unknown as FastifyInstance;
 
   fastify.register(fastifyWebsocket);
 

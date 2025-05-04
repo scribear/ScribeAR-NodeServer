@@ -7,6 +7,8 @@ services:
       - API_KEY=${API_KEY}
     expose:
       - 80
+    volumes:
+      - ./device_config.json:/app/device_config.json
     restart: unless-stopped
 
   node-server:

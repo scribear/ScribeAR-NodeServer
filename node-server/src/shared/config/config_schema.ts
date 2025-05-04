@@ -28,17 +28,6 @@ const SERVER_CONFIG = Type.Object({
   SERVER_ADDRESS: Type.String({default: '127.0.0.1:8080'}),
 });
 
-const HTTPS_CONFIG = Type.Union([
-  Type.Object({
-    USE_HTTPS: Type.Literal(false),
-  }),
-  Type.Object({
-    USE_HTTPS: Type.Literal(true),
-    KEY_FILEPATH: Type.String({minLength: 1}),
-    CERTIFICATE_FILEPATH: Type.String({minLength: 1}),
-  }),
-]);
-
 const WHISPER_CONFIG = Type.Object({
   WHISPER_SERVICE_ENDPOINT: Type.String({minLength: 1}),
   WHISPER_RECONNECT_INTERVAL_SEC: Type.Number({default: 1}),
@@ -60,7 +49,7 @@ const AUTH_CONFIG = Type.Union([
 ]);
 
 // Merge all configs into one schema
-export const SCHEMA = Type.Intersect([RUNTIME_CONFIG, SERVER_CONFIG, HTTPS_CONFIG, WHISPER_CONFIG, AUTH_CONFIG]);
+export const SCHEMA = Type.Intersect([RUNTIME_CONFIG, SERVER_CONFIG, WHISPER_CONFIG, AUTH_CONFIG]);
 
 export type ConfigType = Readonly<{
   nodeEnv: NodeEnv;
@@ -74,16 +63,7 @@ export type ConfigType = Readonly<{
     port: number;
     corsOrigin: string;
     serverAddress: string;
-  } & (
-    | {
-        useHttps: false;
-      }
-    | {
-        useHttps: true;
-        keyPath: string;
-        certPath: string;
-      }
-  );
+  };
   whisper: {
     endpoint: string;
     reconnectIntervalSec: number;
