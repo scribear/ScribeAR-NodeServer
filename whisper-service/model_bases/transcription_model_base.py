@@ -4,9 +4,14 @@ Provides classes to define a unified transcription model interface.
 Classes:
     BackendTranscriptionBlockType
     TranscriptionModelBase
+
+Types:
+    TranscriptionModelConfig
 '''
 import io
 import logging
+from typing import Union, List, Dict
+from abc import ABC, abstractmethod
 from enum import IntEnum
 from fastapi import WebSocket
 
@@ -20,25 +25,53 @@ class BackendTranscriptionBlockType(IntEnum):
     IN_PROGRESS = 1
 
 
-class TranscriptionModelBase:
+type JsonType = Union[None, int, str, bool,
+                      List[JsonType], Dict[str, JsonType]]
+type ImplementationModelConfig = JsonType
+
+
+class TranscriptionModelBase(ABC):
     '''
     Base transcription model class.
     Presents a unified interface for using different transcription models on the backend.
 
-    The load_model(), unload_model(), and queue_audio_chunk() methods must be implemented.
+    The validate_config(), load_model(), unload_model(), and 
+    queue_audio_chunk() methods must be implemented.
     '''
-    __slots__ = ['logger', 'ws']
+    __slots__ = ['logger', 'ws', 'config']
 
-    def __init__(self, ws: WebSocket):
+    def __init__(self, ws: WebSocket, config: ImplementationModelConfig):
         '''
         Called when a websocket requests a transcription model.
 
         Parameters:
-        ws  (WebSocket): FastAPI websocket that requested the model
+        ws  (WebSocket)                  : FastAPI websocket that requested the model
+        config (TranscriptionModelConfig): Custom JSON object containing configuration for model 
+                                           Defined by implementation
         '''
         self.ws = ws
+        self.config = self.validate_config(config)
         self.logger = logging.getLogger('uvicorn.error')
 
+    @staticmethod
+    @abstractmethod
+    def validate_config(config: dict) -> ImplementationModelConfig:
+        '''
+        Should check if loaded JSON config is valid. Called model is instantiated.
+        Throw an error if provided config is not valid
+        Remember to call valididate_config for any model_bases to ensure configuration 
+        for model_bases is checked as well. 
+        e.g. if you use LocalAgreeModelBase: config = LocalAgreeModelBase.validate(config)
+
+        Parameters:
+        config (dict): Parsed JSON config from server device_config.json. Guaranteed to be a dict.
+
+        Returns:
+        config (TranscriptionModelConfig): Validated config object
+        '''
+        raise NotImplementedError('Must implement per model')
+
+    @abstractmethod
     def load_model(self) -> None:
         '''
         Should load model into memory to be ready for transcription.
@@ -46,6 +79,7 @@ class TranscriptionModelBase:
         '''
         raise NotImplementedError('Must implement per model')
 
+    @abstractmethod
     def unload_model(self) -> None:
         '''
         Should unload model from memory and cleanup.
@@ -53,6 +87,7 @@ class TranscriptionModelBase:
         '''
         raise NotImplementedError('Must implement per model')
 
+    @abstractmethod
     async def queue_audio_chunk(self, audio_chunk: io.BytesIO) -> None:
         '''
         Called when an audio chunk is received.

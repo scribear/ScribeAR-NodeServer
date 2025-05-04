@@ -4,10 +4,12 @@ Provides a helper class for implementing Transcription Models
 Classes:
     BufferAudioModelBase
 '''
+from abc import abstractmethod
 import numpy as np
 import numpy.typing as npt
-from utils.np_circular_buffer import NPCircularBuffer
+from utils.config_dict_contains import config_dict_contains_int
 from utils.decode_wav import decode_wav
+from utils.np_circular_buffer import NPCircularBuffer
 from model_bases.transcription_model_base import TranscriptionModelBase
 
 
@@ -26,22 +28,18 @@ class BufferAudioModelBase(TranscriptionModelBase):
                  'num_last_processed_samples', 'num_purged_samples', 'buffer']
     SAMPLE_RATE = 16_000
 
-    def __init__(
-        self,
-        ws,
-        max_segment_samples=SAMPLE_RATE * 30,
-        min_new_samples=SAMPLE_RATE
-    ):
+    def __init__(self, ws, config):
         '''
+        Called when a websocket requests a transcription model.
+
         Parameters:
-        ws                  (WebSocket): FastAPI websocket that requested the model
-        max_segment_samples (int)      : Maximum number of samples to be passed to process_segment()
-        min_new_samples     (int)      : Minimum number of fresh samples in buffer before 
-                                         process_segment() should be called
+        ws  (WebSocket)                  : FastAPI websocket that requested the model
+        config (TranscriptionModelConfig): Custom JSON object containing configuration for model 
+                                           Defined by implementation
         '''
-        super().__init__(ws)
-        self.max_segment_samples = max_segment_samples
-        self.min_new_samples = min_new_samples
+        super().__init__(ws, config)
+        self.max_segment_samples = config['max_segment_samples']
+        self.min_new_samples = config['min_new_samples']
 
         self.num_last_processed_samples = 0
         self.num_purged_samples = 0
@@ -49,6 +47,29 @@ class BufferAudioModelBase(TranscriptionModelBase):
             self.max_segment_samples,
             dtype=np.float16
         )
+
+    @staticmethod
+    def validate_config(config):
+        '''
+        Should check if loaded JSON config is valid. Called model is instantiated.
+        Throw an error if provided config is not valid
+        Remember to call valididate_config for any model_bases to ensure configuration 
+        for model_bases is checked as well. 
+        e.g. if you use LocalAgreeModelBase: config = LocalAgreeModelBase.validate(config)
+
+        Parameters:
+        config (dict): Parsed JSON config from server device_config.json. Guaranteed to be a dict.
+
+        Returns:
+        config (TranscriptionModelConfig): Validated config object
+        '''
+        config_dict_contains_int(config, 'min_new_samples')
+        config_dict_contains_int(
+            config,
+            'max_segment_samples',
+            minimum=config['min_new_samples']
+        )
+        return config
 
     def load_model(self) -> None:
         '''
@@ -64,6 +85,7 @@ class BufferAudioModelBase(TranscriptionModelBase):
         '''
         raise NotImplementedError('Must implement per model')
 
+    @abstractmethod
     async def process_segment(
         self,
         audio_segment: npt.NDArray,

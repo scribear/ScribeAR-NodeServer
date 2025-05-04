@@ -10,7 +10,6 @@ from fastapi.websockets import WebSocketDisconnect
 from fastapi.testclient import TestClient
 from load_config import AppConfig
 from model_bases.transcription_model_base import TranscriptionModelBase
-
 from create_server import create_server
 
 
@@ -38,7 +37,11 @@ def fake_transcription_model():
         '''
 
         def __init__(self):
-            super().__init__(None)
+            super().__init__(None, {})
+
+        @staticmethod
+        def validate_config(config):
+            return config
 
         def load_model(self):
             return None
@@ -51,19 +54,27 @@ def fake_transcription_model():
 
     return mock.Mock(wraps=Fake())
 
+
 @pytest.fixture(scope='function')
 def test_client(fake_config, fake_transcription_model):
     '''
     Create a FastAPI test client for each test
     '''
-    def fake_factory(model_key: str, ws: WebSocket):
-        if isinstance(ws, WebSocket) and model_key == 'test-model':
+    fake_device_config = {
+        'test-model': {}
+    }
+
+    def fake_factory(device_config, model_key: str, ws: WebSocket):
+        if (isinstance(ws, WebSocket) and
+            model_key == 'test-model' and
+            fake_device_config != device_config
+            ):
             return fake_transcription_model
 
         raise NotImplementedError(
             'Invalid model key or invalid websocket argument.'
         )
-    app = create_server(fake_config, fake_factory)
+    app = create_server(fake_config, {}, fake_factory)
     return TestClient(app)
 
 
