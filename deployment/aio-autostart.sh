@@ -2,9 +2,8 @@
 set -e
 
 NODE_PORT=8080
-FRONTEND_PORT=3000
-SOURCE_TOKEN="CHANGEME"
-SCRIBEAR_URL="http://192.168.10.160:${FRONTEND_PORT}"
+SOURCE_TOKEN=CHANGEME
+SCRIBEAR_URL=http://localhost:3000
 
 SCRIPT_DIR=$(dirname $0)
 cd $SCRIPT_DIR
@@ -26,23 +25,18 @@ mkdir -p $BASE_DIR/logs
 
 
 echo "Starting Whisper Service"
-cd $BASE_DIR/../whisper-service; 
+cd $BASE_DIR/whisper-service; 
 source .venv/bin/activate; 
 python index.py 2>> $BASE_DIR/logs/whisper-service.log &
 PYTHON_PID=$!
 
 
 echo "Starting Node Server"
-cd $BASE_DIR/../node-server; 
+cd $BASE_DIR/node-server; 
 node ./build/src/index.js >> $BASE_DIR/logs/node-server.log &
 NODE_PID=$!
 sleep 15
 
-until [ "$(curl --max-time 1 -s -w '%{http_code}' -o /dev/null "${SCRIBEAR_URL}")" -eq 200 ]
-do
-  echo "Can't reach frontend at ${SCRIBEAR_URL}. Waiting for frontend to be ready..."
-  sleep 1
-done
 
 echo "Launching Chrome"
-google-chrome "http://localhost:${FRONTEND_PORT}/?mode=kiosk&kioskServerAddress=localhost:${NODE_PORT}&sourceToken=${SOURCE_TOKEN}&scribearURL=${SCRIBEAR_URL}" --start-fullscreen
+google-chrome "https://scribear.illinois.edu/v/latest/?mode=kiosk&kioskServerAddress=localhost:${NODE_PORT}&sourceToken=${SOURCE_TOKEN}&scribearURL=${SCRIBEAR_URL}" --start-fullscreen
