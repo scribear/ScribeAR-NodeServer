@@ -11,6 +11,7 @@ from init_device_config import init_device_config
 config = load_config()
 device_config = init_device_config('device_config.json')
 APP = create_server(config, device_config, model_factory)
+print(config)
 
 if __name__ == '__main__':
     dev_mode = len(sys.argv) > 1 and sys.argv[1] == '--dev'
