@@ -10,24 +10,10 @@ Types:
 '''
 import io
 import logging
-from typing import Union, List, Dict
 from abc import ABC, abstractmethod
-from enum import IntEnum
 from fastapi import WebSocket
-
-
-class BackendTranscriptionBlockType(IntEnum):
-    '''
-    Possible values for transcription block type value
-    Should match values that node-server expects
-    '''
-    FINAL = 0
-    IN_PROGRESS = 1
-
-
-type JsonType = Union[None, int, str, bool,
-                      List[JsonType], Dict[str, JsonType]]
-type ImplementationModelConfig = JsonType
+from custom_types.config_types import ImplementationModelConfig
+from custom_types.transcription_types import BackendTranscriptionBlockType, BackendTranscriptBlock
 
 
 class TranscriptionModelBase(ABC):
@@ -45,9 +31,9 @@ class TranscriptionModelBase(ABC):
         Called when a websocket requests a transcription model.
 
         Parameters:
-        ws  (WebSocket)                  : FastAPI websocket that requested the model
-        config (TranscriptionModelConfig): Custom JSON object containing configuration for model 
-                                           Defined by implementation
+        ws                       (WebSocket): FastAPI websocket that requested the model
+        config    (TranscriptionModelConfig): Custom JSON object containing configuration for model 
+                                                Defined by implementation
         '''
         self.ws = ws
         self.config = self.validate_config(config)
@@ -101,38 +87,40 @@ class TranscriptionModelBase(ABC):
         '''
         raise NotImplementedError('Must implement per model')
 
-    async def on_final_transcript_block(self, text: str, start=-1, end=-1) -> None:
+    async def on_final_transcript_block(self, text: str, start=-1.0, end=-1.0) -> None:
         '''
         Call this when a block of finalized transcription is ready
 
         Parameters:
-        text    (str): Finalized transcribed text
-        start   (int): Start time of this transcription chunk [Optional]
-        end     (int): End time of this transcription chunk [Optional]
+        text    (str)  : Finalized transcribed text
+        start   (float): Start time of this transcription chunk [Optional]
+        end     (float): End time of this transcription chunk [Optional]
         '''
         self.logger.info('[%6.2f - %6.2f] Final      : %s', start, end, text)
-        await self.ws.send_json({
+        transcript_block: BackendTranscriptBlock = {
             'type': BackendTranscriptionBlockType.FINAL,
             'text': text,
             'start': start,
             'end': end
-        })
+        }
+        await self.ws.send_json(transcript_block)
 
-    async def on_in_progress_transcript_block(self, text: str, start=-1, end=-1) -> None:
+    async def on_in_progress_transcript_block(self, text: str, start=-1.0, end=-1.0) -> None:
         '''
         Call this when a block of in progress transcription is ready.
         This is used to provide a lower latency transcription at the cost of some accuracy.
         If model does not support in progress guesses, only call on_final_transcript_chunk().
 
         Parameters:
-        text    (str): Finalized transcribed text
-        start   (int): Start time of this transcription block [Optional]
-        end     (int): End time of this transcription block [Optional]
+        text    (str)  : Finalized transcribed text
+        start   (float): Start time of this transcription block [Optional]
+        end     (float): End time of this transcription block [Optional]
         '''
         self.logger.info('[%6.2f - %6.2f] In Progress: %s', start, end, text)
-        await self.ws.send_json({
+        transcript_block: BackendTranscriptBlock = {
             'type': BackendTranscriptionBlockType.IN_PROGRESS,
             'text': text,
             'start': start,
             'end': end
-        })
+        }
+        await self.ws.send_json(transcript_block)
