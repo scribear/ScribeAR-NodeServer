@@ -39,12 +39,18 @@ async def select_model(
     except json.JSONDecodeError:
         logger.info(
             'Model Selection Failed: Invalid model selection message')
-        await websocket.send_text('Model Selection Failed: Invalid model selection message')
+        await websocket.send_json({
+            'error': True,
+            'msg': 'Model Selection Failed: Invalid model selection message'
+        })
         return False
     except asyncio.TimeoutError:
         logger.info(
             'Model Selection Timeout: No selection received in time')
-        await websocket.send_text('Model Selection Timeout: No selection received in time')
+        await websocket.send_json({
+            'error': True,
+            'msg': 'Model Selection Timeout: No selection received in time'
+        })
         return False
     except WebSocketDisconnect:
         logger.info('Model Selection Failed: Websocket closed')
@@ -52,12 +58,18 @@ async def select_model(
 
     if 'model_key' not in model_selection:
         logger.info('Model Selection Failed: No model_key provided')
-        await websocket.send_text('Model Selection Failed: No model_key provided')
+        await websocket.send_json({
+            'error': True,
+            'msg': 'Model Selection Failed: No model_key provided'
+        })
         return False
 
     if model_selection['model_key'] not in device_config:
         logger.info('Model Selection Failed: Invalid model_key provided')
-        await websocket.send_text('Model Selection Failed: Invalid model_key provided')
+        await websocket.send_json({
+            'error': True,
+            'msg': 'Model Selection Failed: Invalid model_key provided'
+        })
         return False
 
     return model_selection

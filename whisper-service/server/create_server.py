@@ -52,11 +52,11 @@ def create_server(
         await websocket.accept()
 
         if not await authenticate_websocket_fun(websocket, config):
-            await websocket.close()
+            return await websocket.close()
 
         selected_option = await select_model_fun(websocket, device_config, selection_options)
         if not selected_option:
-            await websocket.close()
+            return await websocket.close()
 
         model_key = selected_option['model_key']
 

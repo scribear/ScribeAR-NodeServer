@@ -46,7 +46,7 @@ export default function loadConfig(path?: string): ConfigType {
     },
     whisper: {
       endpoint: env.WHISPER_SERVICE_ENDPOINT,
-      reconnectIntervalSec: env.WHISPER_RECONNECT_INTERVAL_SEC,
+      apiKey: env.API_KEY,
     },
     auth: {
       required: env.REQUIRE_AUTH,

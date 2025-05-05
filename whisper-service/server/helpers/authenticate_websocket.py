@@ -30,11 +30,17 @@ async def authenticate_websocket(websocket: WebSocket, config: AppConfig) -> boo
     except json.JSONDecodeError:
         logger.info(
             'Authentication Failed: Invalid authentication message')
-        await websocket.send_text('Authentication Failed: Invalid authentication message')
+        await websocket.send_json({
+            'error': True,
+            'msg': 'Authentication Failed: Invalid authentication message'
+        })
         return False
     except asyncio.TimeoutError:
         logger.info('Authentication Timeout: No api_key received in time')
-        await websocket.send_text('Authentication Timeout: No api_key received in time')
+        await websocket.send_json({
+            'error': True,
+            'msg': 'Authentication Timeout: No api_key received in time'
+        })
         return False
     except WebSocketDisconnect:
         logger.info('Authentication Failed: Websocket closed')
@@ -43,7 +49,10 @@ async def authenticate_websocket(websocket: WebSocket, config: AppConfig) -> boo
     # Reject invalid API keys
     if 'api_key' not in auth_message or auth_message['api_key'] != config['API_KEY']:
         logger.info('Authentication Failed: Invalid key')
-        await websocket.send_text('Authentication Failed: Invalid key')
+        await websocket.send_json({
+            'error': True,
+            'msg': 'Authentication Failed: Invalid key'
+        })
         return False
 
     return True

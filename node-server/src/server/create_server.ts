@@ -10,10 +10,12 @@ import fastifySensible from '@fastify/sensible';
 import TokenService from './services/token_service.js';
 import accessTokenHandler from './routes/session_auth_handler.js';
 import healthcheckHandler from './routes/healthcheck_handler.js';
+import AuthenticationService from './services/authentication_service.js';
 
 declare module 'fastify' {
   export interface FastifyInstance {
     config: ConfigType;
+    authenticationService: AuthenticationService;
     transcriptionEngine: TranscriptionEngine;
     tokenService: TokenService;
   }
@@ -45,6 +47,7 @@ export default function createServer(config: ConfigType, logger: Logger) {
   fastify.decorate('config', config);
   fastify.decorate('transcriptionEngine', new TranscriptionEngine(config, logger));
   fastify.decorate('tokenService', new TokenService(config, logger));
+  fastify.decorate('authenticationService', new AuthenticationService(config, fastify.tokenService));
 
   // Register routes
   fastify.register(websocketHandler);

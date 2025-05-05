@@ -30,7 +30,7 @@ const SERVER_CONFIG = Type.Object({
 
 const WHISPER_CONFIG = Type.Object({
   WHISPER_SERVICE_ENDPOINT: Type.String({minLength: 1}),
-  WHISPER_RECONNECT_INTERVAL_SEC: Type.Number({default: 1}),
+  API_KEY: Type.String({minLength: 1}),
 });
 
 const AUTH_CONFIG = Type.Union([
@@ -66,7 +66,7 @@ export type ConfigType = Readonly<{
   };
   whisper: {
     endpoint: string;
-    reconnectIntervalSec: number;
+    apiKey: string;
   };
   auth:
     | {required: false}
