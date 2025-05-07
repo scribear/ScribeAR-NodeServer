@@ -22,7 +22,7 @@ services:
       - USE_HTTPS=${USE_HTTPS}
       - CORS_ORIGIN=${CORS_ORIGIN}
       - SERVER_ADDRESS=${SERVER_ADDRESS}
-      - WHISPER_SERVICE_ENDPOINT=ws://whisper-service:80/whisper
+      - WHISPER_SERVICE_ENDPOINT=ws://whisper-service:80/sourcesink
       - API_KEY=${API_KEY}
       - REQUIRE_AUTH=${REQUIRE_AUTH}
       - SOURCE_TOKEN=${SOURCE_TOKEN}
