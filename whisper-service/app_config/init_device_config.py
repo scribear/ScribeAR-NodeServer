@@ -11,32 +11,13 @@ Types:
 '''
 import json
 import logging
-from typing import Any, TypedDict
+from typing import Any
 from model_implementations.import_model_implementation import \
     ModelImplementationId, import_model_implementation
 from utils.config_dict_contains import \
     config_dict_contains_dict, config_dict_contains_one_of, config_dict_contains_str
-
-
-class AvailableFeaturesConfig(TypedDict):
-    '''
-    Type hint for available features configuration dict
-    '''
-
-
-class ModelConfig(TypedDict):
-    '''
-    Type hint for model configuration dict
-    '''
-    display_name: str
-    description: str
-    implementation_id: ModelImplementationId
-    implementation_configuration: dict
-    available_features: AvailableFeaturesConfig
-
-
-# Type hint for loaded device configuration dict
-type DeviceConfig = dict[str, ModelConfig]
+from custom_types.config_types import ModelConfig, DeviceConfig
+from custom_types.model_selection_types import SelectionOptions
 
 
 def init_model(device_config: dict[str, Any], key: str) -> ModelConfig:
@@ -51,7 +32,7 @@ def init_model(device_config: dict[str, Any], key: str) -> ModelConfig:
     key           (str) : model_key to initialize
 
     Return:
-    Validated ModelConfig dict
+    Validated ModelConfig object
     '''
     logger = logging.getLogger('uvicorn.error')
 
@@ -92,13 +73,16 @@ def init_model(device_config: dict[str, Any], key: str) -> ModelConfig:
     }
 
 
-def init_device_config(device_config_path: str) -> DeviceConfig:
+def init_device_config(device_config_path: str) -> tuple[DeviceConfig, SelectionOptions]:
     '''
     Loads device config file from provided path then initializes configured models.
 
 
     Parameters:
     device_config_path (str): Path to device config file
+
+    Returns:
+    DeviceConfig object and SelectionOptions object
     '''
     logger = logging.getLogger('uvicorn.error')
 
@@ -110,8 +94,17 @@ def init_device_config(device_config_path: str) -> DeviceConfig:
         raise ValueError('Device config must an object')
 
     device_config: DeviceConfig = {}
+    selection_options: SelectionOptions = []
     for key in loaded_config.keys():
         model_config = init_model(loaded_config, key)
+
         device_config[key] = model_config
 
-    return device_config
+        selection_options.append({
+            'model_key': key,
+            'display_name': model_config['display_name'],
+            'description': model_config['description'],
+            'available_features': model_config['available_features']
+        })
+
+    return device_config, selection_options

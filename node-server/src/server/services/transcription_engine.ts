@@ -1,5 +1,7 @@
 import type {ConfigType} from '@shared/config/config_schema.js';
 import type {Logger} from '@shared/logger/logger.js';
+import {Type, type Static} from '@sinclair/typebox';
+import {Value} from '@sinclair/typebox/value';
 import {TypedEmitter} from 'tiny-typed-emitter';
 import WebSocket from 'ws';
 
@@ -8,84 +10,121 @@ export enum BackendTranscriptBlockType {
   InProgress = 1,
 }
 
-export type BackendTranscriptBlock = {
-  type: BackendTranscriptBlockType;
-  start: number;
-  end: number;
-  text: string;
-};
+const BACKEND_TRANSCRIPT_BLOCK_SCHEMA = Type.Object(
+  {
+    type: Type.Enum(BackendTranscriptBlockType),
+    start: Type.Number(),
+    end: Type.Number(),
+    text: Type.String(),
+  },
+  {additionalProperties: false},
+);
+
+export type BackendTranscriptBlock = Static<typeof BACKEND_TRANSCRIPT_BLOCK_SCHEMA>;
 
 export type AudioTranscriptEvents = {
   transcription: (block: BackendTranscriptBlock) => unknown;
+  sourceMessage: (message: JSON) => unknown;
 };
 
 export default class TranscriptionEngine extends TypedEmitter<AudioTranscriptEvents> {
   private _ws?: WebSocket;
-  private _reconnectInterval: number;
-  private _resetReconnectIntervalTimeout?: NodeJS.Timeout;
+  private _log: Logger;
 
   constructor(
     private _config: ConfigType,
-    private _log: Logger,
+    log: Logger,
   ) {
     super();
-    this._reconnectInterval = this._config.whisper.reconnectIntervalSec * 1000;
-    this._connectWhisperService();
+    this._log = log.child({service: 'TranscriptionEngine'});
   }
 
   /**
-   * Connects to whisper service via websocket connection
+   * Initializes a new connection to whisper service
    */
-  private _connectWhisperService() {
-    clearTimeout(this._resetReconnectIntervalTimeout);
-    this._ws = new WebSocket(this._config.whisper.endpoint);
+  connectWhisperService() {
+    if (this._ws) {
+      this._log.debug('Closing existing websocket before initializing new connection');
 
-    this._ws.on('error', err => {
-      this._log.error({msg: 'Error on whisper service connection', err});
-    });
+      try {
+        this._ws.close();
+      } catch (err) {
+        this._log.warn({msg: 'Failed to close existing websocket before initializing new connection', err});
+      }
+    }
 
-    // Reconnect to whisper service automatically after an exponentially increasing timeout
-    this._ws.on('close', () => {
-      this._log.info(`Whisper service connection closed, reconnecting in ${this._reconnectInterval}ms`);
-      setTimeout(() => this._connectWhisperService(), this._reconnectInterval);
-      this._reconnectInterval = Math.min(30_000, 2 * this._reconnectInterval);
-    });
-
-    this._ws.on('open', () => {
+    const ws = new WebSocket(this._config.whisper.endpoint);
+    ws.once('open', () => {
       this._log.info('Connected to whisper service');
+      ws.send(
+        JSON.stringify({
+          api_key: this._config.whisper.apiKey,
+        }),
+      );
 
-      this._resetReconnectIntervalTimeout = setTimeout(() => {
-        this._reconnectInterval = this._config.whisper.reconnectIntervalSec * 1000;
-      }, 30_000);
+      this._ws = ws;
+      ws.on('message', data => {
+        let message;
+        try {
+          message = JSON.parse(data.toString());
+        } catch (err) {
+          this._log.error({msg: 'Failed to parse message from whisper service', err, message: data.toString()});
+          return;
+        }
+        const isTranscriptBlock = Value.Check(BACKEND_TRANSCRIPT_BLOCK_SCHEMA, message);
+
+        if (isTranscriptBlock) {
+          this._log.trace({msg: 'Emiting transcript transcript event', block: message});
+          this.emit('transcription', message);
+        } else {
+          this._log.trace({msg: 'Emiting source message event', message});
+          this.emit('sourceMessage', message);
+        }
+      });
     });
 
-    this._ws.on('message', data => {
-      // TODO: Check data format?
-      const block = JSON.parse(data.toString());
-      this.emit('transcription', block);
+    ws.on('error', err => {
+      this._log.error({msg: 'Whisper service websocket encountered an error', err});
+    });
+
+    ws.on('close', code => {
+      this._log.info(`Whisper service connection closed with code ${code}`);
     });
   }
 
   /**
-   * Send an audio chunk to the backend
-   * Each chunk should be buffer containing wav audio
-   * @param chunk
+   * Disconnects the existing whisper service connection
    */
-  sendAudioChunk(chunk: Buffer) {
-    try {
-      this._ws?.send(chunk);
-    } catch (err) {
-      this._log.trace({msg: 'Error while sending audio chunk to whisper server', err});
+  disconnectWhisperService() {
+    if (this._ws) {
+      this._log.debug('Closing existing websocket');
+
+      try {
+        this._ws.close();
+      } catch (err) {
+        this._log.warn({msg: 'Failed to close existing websocket', err});
+      }
+    } else {
+      this._log.trace('No existing websocket to disconnect');
     }
   }
 
   /**
-   * Closes connection to whisper serverice permanently
+   * Forward a message to whisper service
+   * @param message message to send
+   * @param isBinary if message is binary or not
    */
-  destroy() {
-    this._log.info('Destroying transcription engine');
-    this._ws?.removeAllListeners('close');
-    this._ws?.close();
-    this.removeAllListeners();
+  forwardMessage(data: WebSocket.RawData, isBinary: boolean) {
+    if (this._ws) {
+      const message = isBinary ? data : data.toString();
+      try {
+        this._log.trace({msg: 'Forwarding message to whisper server', message});
+        this._ws.send(message);
+      } catch (err) {
+        this._log.error({msg: 'Error while forwarding message to whisper server', data, err});
+      }
+    } else {
+      this._log.debug({msg: "Can't forward message to whisper service because websocket doesn't exist", data});
+    }
   }
 }

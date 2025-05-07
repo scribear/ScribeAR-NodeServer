@@ -10,6 +10,7 @@ import math
 import numpy.typing as npt
 from model_bases.buffer_audio_model_base import BufferAudioModelBase
 from utils.config_dict_contains import config_dict_contains_int
+from custom_types.config_types import ImplementationModelConfig
 
 
 class TranscriptionSegment:
@@ -98,7 +99,7 @@ class LocalAgreeModelBase(BufferAudioModelBase):
         self.prev_transcriptions: list[list[TranscriptionSegment]] = []
 
     @staticmethod
-    def validate_config(config):
+    def validate_config(config: dict) -> ImplementationModelConfig:
         '''
         Should check if loaded JSON config is valid. Called model is instantiated.
         Throw an error if provided config is not valid

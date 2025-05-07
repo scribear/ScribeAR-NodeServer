@@ -2,24 +2,19 @@
 Function for importing specified model implementation
 
 Functions:
-  import_model_implementation
-
-Enums:
-  ModelImplementationId
+    import_model_implementation
 '''
 # pylint: disable=import-outside-toplevel
-from enum import StrEnum
+#   Disable linter rule so we can do imports in import_model_implementation
+#   Avoids needing to import every model even if unused
+#   Can potentially help with dealing with conflicting dependencies)
+from model_bases.transcription_model_base import TranscriptionModelBase
+from custom_types.config_types import ModelImplementationId
 
 
-class ModelImplementationId(StrEnum):
-    '''
-    Unique keys for all available implementations of TranscriptionModelBase
-    '''
-    MOCK_TRANSCRIPTION_DURATION = "mock_transcription_duration"
-    FASTER_WHISPER = "faster_whisper"
-
-
-def import_model_implementation(model_implementation_id: ModelImplementationId):
+def import_model_implementation(
+    model_implementation_id: ModelImplementationId
+) -> TranscriptionModelBase:
     '''
     Imports model with corresponding model_implementation_id.
 

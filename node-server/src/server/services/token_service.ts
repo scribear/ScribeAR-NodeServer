@@ -5,14 +5,17 @@ import crypto from 'node:crypto';
 const MAX_TIMESTAMP = 8640000000000000;
 
 export default class TokenService {
+  private _log: Logger;
   private _validAccessTokens: {[key: string]: Date} = {};
   private _validSessionTokens: {[key: string]: Date} = {};
   private _currentAccessToken = ' ';
 
   constructor(
     private _config: ConfigType,
-    private _log: Logger,
+    log: Logger,
   ) {
+    this._log = log.child({service: 'TokenService'});
+
     this._updateAccessTokens();
 
     if (this._config.auth.required) {

@@ -11,6 +11,7 @@ from utils.config_dict_contains import config_dict_contains_int
 from utils.decode_wav import decode_wav
 from utils.np_circular_buffer import NPCircularBuffer
 from model_bases.transcription_model_base import TranscriptionModelBase
+from custom_types.config_types import ImplementationModelConfig
 
 
 class BufferAudioModelBase(TranscriptionModelBase):
@@ -49,7 +50,7 @@ class BufferAudioModelBase(TranscriptionModelBase):
         )
 
     @staticmethod
-    def validate_config(config):
+    def validate_config(config: dict) -> ImplementationModelConfig:
         '''
         Should check if loaded JSON config is valid. Called model is instantiated.
         Throw an error if provided config is not valid

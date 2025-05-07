@@ -3,8 +3,8 @@ Unit tests for TranscriptionModelBase class
 '''
 # pylint: disable=redefined-outer-name
 import pytest
-from model_bases.transcription_model_base import \
-    TranscriptionModelBase, BackendTranscriptionBlockType
+from model_bases.transcription_model_base import TranscriptionModelBase
+from custom_types.transcription_types import BackendTranscriptionBlockType
 
 fake_config = {
     'some_param': 'string',
