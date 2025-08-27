@@ -6,6 +6,7 @@ RUN apt install software-properties-common -y
 RUN add-apt-repository ppa:deadsnakes/ppa
 RUN apt-get update -y
 RUN apt install python3.12 python3-pip python3.12-venv -y
+RUN apt install curl -y
 
 WORKDIR /app
 
