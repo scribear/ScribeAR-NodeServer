@@ -10,7 +10,14 @@ services:
     volumes:
       - ./device_config.json:/app/device_config.json
     restart: unless-stopped
-
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 'all'
+              capabilities: [gpu]
+              
   node-server:
     image: scribear/node-server:main
     build:
