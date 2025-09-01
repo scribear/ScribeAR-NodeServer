@@ -1,0 +1,20 @@
+services:
+  caddy:
+    image: caddy:2.10-alpine
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile
+      - caddy_data:/data
+      - caddy_config:/config
+    environment:
+      - FRONTEND_PORT=${FRONTEND_PORT}
+      - NODE_PORT=${NODE_PORT}
+      - DOMAIN=${DOMAIN}
+
+volumes:
+  caddy_data:
+  caddy_config:
