@@ -1,7 +1,7 @@
-import Fastify, { type FastifyInstance } from 'fastify';
+import Fastify, {type FastifyInstance} from 'fastify';
 import fastifyCors from '@fastify/cors';
-import type { ConfigType } from '../shared/config/config_schema.js';
-import type { Logger } from '../shared/logger/logger.js';
+import type {ConfigType} from '../shared/config/config_schema.js';
+import type {Logger} from '../shared/logger/logger.js';
 import TranscriptionEngine from './services/transcription_engine.js';
 import fastifyWebsocket from '@fastify/websocket';
 import websocketHandler from './routes/websocket_handler.js';
@@ -30,7 +30,7 @@ declare module 'fastify' {
  * @returns created fastify server
  */
 export default function createServer(config: ConfigType, logger: Logger) {
-  const fastify = Fastify({ loggerInstance: logger }) as unknown as FastifyInstance;
+  const fastify = Fastify({loggerInstance: logger}) as unknown as FastifyInstance;
 
   fastify.register(fastifyWebsocket);
 
@@ -50,13 +50,12 @@ export default function createServer(config: ConfigType, logger: Logger) {
   fastify.decorate('authenticationService', new AuthenticationService(config, fastify.tokenService));
 
   fastify.register(
-    async (api, _options) => {
-      api.register(websocketHandler,);
+    async api => {
+      api.register(websocketHandler);
       api.register(accessTokenHandler);
       api.register(healthcheckHandler);
-
     },
-    { prefix: "/api" },
+    {prefix: '/api'},
   );
 
   return fastify;
