@@ -39,7 +39,7 @@ services:
       - SESSION_TOKEN_BYTES=${SESSION_TOKEN_BYTES}
       - SESSION_LENGTH_SEC=${SESSION_LENGTH_SEC}
     ports:
-      - ${NODE_PORT}:80
+      - "80"
     restart: unless-stopped
 
   frontend:
@@ -49,6 +49,6 @@ services:
       node-server:
         condition: service_healthy
     ports:
-      - ${FRONTEND_PORT}:80
+      - "80"
     image: scribear/frontend:master
     restart: unless-stopped
