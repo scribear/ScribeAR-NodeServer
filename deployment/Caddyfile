@@ -1,10 +1,9 @@
-${DOMAIN:localhost} {
+{$DOMAIN} {
     handle /api/* {
-        reverse_proxy http://localhost:${NODE_PORT:8080}
+        reverse_proxy http://node-server:80
     }
 
     handle {
-        reverse_proxy http://localhost:${FRONTEND_PORT:3000}
-
+        reverse_proxy http://frontend:80
     }
 }

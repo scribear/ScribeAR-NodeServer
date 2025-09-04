@@ -16,20 +16,14 @@ else
   sudo docker compose -f compose.yaml -f ./compose_cpu.yaml up -d
 fi
 
-until [ "$(curl --max-time 1 -s -w '%{http_code}' -o /dev/null "${SCRIBEAR_URL}")" -eq 200 ]
+until [ "$(curl --max-time 1 -s -w '%{http_code}' -o /dev/null "${DOMAIN}")" -eq 200 ]
 do
-  echo "Can't reach frontend at ${SCRIBEAR_URL}. Waiting for frontend to be ready..."
-  sleep 1
-done
-
-until [ "$(curl --max-time 1 -s -w '%{http_code}' -o /dev/null "http://127.0.0.1:${FRONTEND_PORT}")" -eq 200 ]
-do
-  echo "Can't reach frontend at http://127.0.0.1:${FRONTEND_PORT}. Waiting for frontend to be ready..."
+  echo "Can't reach frontend at ${DOMAIN}. Waiting for frontend to be ready..."
   sleep 1
 done
 
 echo "Launching Chrome"
-google-chrome "http://127.0.0.1:${FRONTEND_PORT}/?mode=kiosk&kioskServerAddress=localhost:${NODE_PORT}&sourceToken=${SOURCE_TOKEN}&scribearURL=${SCRIBEAR_URL}" --start-fullscreen
+google-chrome "${DOMAIN}/?mode=kiosk&kioskServerAddress=localhost:${NODE_PORT}&sourceToken=${SOURCE_TOKEN}&scribearURL=${SCRIBEAR_URL}" --start-fullscreen
 
 stop_services() {
   if [ $WHISPER_SERVICE_CUDA = 'true' ]; then

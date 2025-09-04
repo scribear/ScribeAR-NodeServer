@@ -11,8 +11,6 @@ services:
       - caddy_data:/data
       - caddy_config:/config
     environment:
-      - FRONTEND_PORT=${FRONTEND_PORT}
-      - NODE_PORT=${NODE_PORT}
       - DOMAIN=${DOMAIN}
 
 volumes:
