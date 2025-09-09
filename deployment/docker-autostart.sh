@@ -3,16 +3,22 @@ set -e
 
 source .env
 if [ $WHISPER_SERVICE_CUDA = 'true' ]; then
+  echo Pulling images
+  sudo docker compose -f compose.yaml -f ./compose_cuda.yaml pull
+
   echo Stopping any currently running services
   sudo docker compose -f compose.yaml -f ./compose_cuda.yaml down
 
   echo Starting services with CUDA enabled for whisper-service
   sudo docker compose -f compose.yaml -f ./compose_cuda.yaml up -d
 else
+  echo Pulling images
+  sudo docker compose -f compose.yaml -f ./compose_cpu.yaml pull
   echo Stopping any currently running services
   sudo docker compose -f compose.yaml -f ./compose_cpu.yaml down
 
   echo Starting services without CUDA
+  
   sudo docker compose -f compose.yaml -f ./compose_cpu.yaml up -d
 fi
 
@@ -23,7 +29,8 @@ do
 done
 
 echo "Launching Chrome"
-google-chrome "${DOMAIN}/?mode=kiosk&kioskServerAddress=${SCRIBEAR_URL}&sourceToken=${SOURCE_TOKEN}&scribearURL=${SCRIBEAR_URL}" --start-fullscreen
+echo "${DOMAIN}/?mode=kiosk&kioskServerAddress=${SERVER_ADDRESS}&sourceToken=${SOURCE_TOKEN}&scribearURL=${SCRIBEAR_URL}" --start-fullscreen
+google-chrome "${DOMAIN}/?mode=kiosk&kioskServerAddress=${SERVER_ADDRESS}&sourceToken=${SOURCE_TOKEN}&scribearURL=${SCRIBEAR_URL}" --start-fullscreen
 
 stop_services() {
   if [ $WHISPER_SERVICE_CUDA = 'true' ]; then
