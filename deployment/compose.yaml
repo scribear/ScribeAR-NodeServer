@@ -8,8 +8,8 @@ services:
       - "443:443/udp"
     volumes:
       - ./Caddyfile:/etc/caddy/Caddyfile
-      # - /etc/ssl/certs/engrit/dcl-1265-05.cs.illinois.edu.cer:/etc/caddy/pub.cert
-      # - /etc/pki/tls/private/dcl-1265-05.cs.illinois.edu.key:/etc/caddy/priv.key
+      - /etc/ssl/certs/engrit/dcl-1265-05.cs.illinois.edu.cer:/etc/caddy/pub.cert
+      - /etc/ssl/private/engrit/dcl-1265-05.cs.illinois.edu.key:/etc/caddy/priv.key
       - caddy_data:/data
       - caddy_config:/config
     environment:

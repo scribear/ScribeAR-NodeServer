@@ -1,5 +1,5 @@
 {$DOMAIN} {
-    # tls /etc/caddy/pub.cert /etc/caddy/priv.key
+    tls /etc/caddy/pub.cert /etc/caddy/priv.key
 
     handle /api/* {
         reverse_proxy http://node-server:80
