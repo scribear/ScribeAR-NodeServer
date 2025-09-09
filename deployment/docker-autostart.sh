@@ -23,7 +23,7 @@ do
 done
 
 echo "Launching Chrome"
-google-chrome "${DOMAIN}/?mode=kiosk&kioskServerAddress=localhost:${NODE_PORT}&sourceToken=${SOURCE_TOKEN}&scribearURL=${SCRIBEAR_URL}" --start-fullscreen
+google-chrome "${DOMAIN}/?mode=kiosk&kioskServerAddress=${SCRIBEAR_URL}&sourceToken=${SOURCE_TOKEN}&scribearURL=${SCRIBEAR_URL}" --start-fullscreen
 
 stop_services() {
   if [ $WHISPER_SERVICE_CUDA = 'true' ]; then
