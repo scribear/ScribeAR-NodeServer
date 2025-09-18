@@ -26,7 +26,7 @@ class BufferAudioModelBase(TranscriptionModelBase):
     and process_segment() methods must be implemented.
     '''
     __slots__ = ['max_segment_samples', 'min_new_samples',
-                 'num_last_processed_samples', 'num_purged_samples', 'buffer']
+                 'num_last_processed_samples', 'num_purged_samples', 'buffer','silence_threshold']
     SAMPLE_RATE = 16_000
 
     def __init__(self, ws, config):
@@ -41,6 +41,7 @@ class BufferAudioModelBase(TranscriptionModelBase):
         super().__init__(ws, config)
         self.max_segment_samples = config['max_segment_samples']
         self.min_new_samples = config['min_new_samples']
+        self.silence_threshold = config['silence_threshold']
 
         self.num_last_processed_samples = 0
         self.num_purged_samples = 0
@@ -130,6 +131,11 @@ class BufferAudioModelBase(TranscriptionModelBase):
         audio_chunk   (io.BytesIO): A buffer containing wav audio
         '''
         audio = decode_wav(audio_chunk)
+
+        # Filter out silent audio
+        if np.abs(audio).max() < self.silence_threshold:
+            return
+
         extra_audio = self.buffer.append_sequence(audio)
 
         # If buffer is full, process segments until entire audio chunk can be
