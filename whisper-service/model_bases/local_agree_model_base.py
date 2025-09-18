@@ -113,6 +113,7 @@ class LocalAgreeModelBase(BufferAudioModelBase):
         Returns:
         config (TranscriptionModelConfig): Validated config object
         '''
+        config = BufferAudioModelBase.validate_config(config)
         config_dict_contains_int(config, 'local_agree_dim', minimum=1)
         return config
 

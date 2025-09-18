@@ -7,7 +7,7 @@ Classes:
 from abc import abstractmethod
 import numpy as np
 import numpy.typing as npt
-from utils.config_dict_contains import config_dict_contains_int
+from utils.config_dict_contains import config_dict_contains_int, config_dict_contains_float
 from utils.decode_wav import decode_wav
 from utils.np_circular_buffer import NPCircularBuffer
 from model_bases.transcription_model_base import TranscriptionModelBase
@@ -26,7 +26,7 @@ class BufferAudioModelBase(TranscriptionModelBase):
     and process_segment() methods must be implemented.
     '''
     __slots__ = ['max_segment_samples', 'min_new_samples',
-                 'num_last_processed_samples', 'num_purged_samples', 'buffer','silence_threshold']
+                 'num_last_processed_samples', 'num_purged_samples', 'buffer', 'silence_threshold']
     SAMPLE_RATE = 16_000
 
     def __init__(self, ws, config):
@@ -71,6 +71,7 @@ class BufferAudioModelBase(TranscriptionModelBase):
             'max_segment_samples',
             minimum=config['min_new_samples']
         )
+        config_dict_contains_float(config, 'silence_threshold')
         return config
 
     def load_model(self) -> None:

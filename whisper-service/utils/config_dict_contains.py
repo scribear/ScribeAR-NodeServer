@@ -37,6 +37,36 @@ def config_dict_contains_int(config: dict, key: str, minimum=-sys.maxsize - 1, m
         )
 
 
+def config_dict_contains_float(
+    config: dict,
+        key: str,
+        minimum=-sys.maxsize - 1,
+        maximum=sys.maxsize
+):
+    '''
+    Checks if config contains a property, key, 
+    that is a float between minimum and maximum inclusive
+
+    Parameters:
+    config  (dict) : Config dictionary
+    key     (str)  : Key to check in config dictionary
+    minimum (float): (Optional) minimum value key is allowed to be
+    maximum (int)  : (Optional) maximum value key is allowed to be
+    '''
+    if key not in config:
+        raise ValueError(f'Config missing "{key}" property')
+    if not isinstance(config[key], float):
+        raise ValueError(f'"{key}" property of config must be a float')
+    if config[key] < minimum:
+        raise ValueError(
+            f'{key} property of config must be greater than or equal to {minimum}'
+        )
+    if config[key] > maximum:
+        raise ValueError(
+            f'{key} property of config must be less than or equal to {maximum}'
+        )
+
+
 def config_dict_contains_str(config: dict, key: str, min_length=0, max_length=sys.maxsize):
     '''
     Checks if config contains a property, key, 
