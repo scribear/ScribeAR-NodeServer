@@ -15,7 +15,8 @@
       "device": "cpu",
       "local_agree_dim": 2,
       "min_new_samples": 48000,
-      "max_segment_samples": 480000
+      "max_segment_samples": 480000,
+      "silence_threshold": 0.01
     },
     "available_features": {}
   }
