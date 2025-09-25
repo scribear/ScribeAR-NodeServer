@@ -80,7 +80,8 @@ class FasterWhisperModel(LocalAgreeModelBase):
         transcription, _ = self.model.transcribe(
             audio_segment,
             initial_prompt=prev_text,
-            word_timestamps=True
+            word_timestamps=True,
+            vad_filter=True
         )
 
         segments = []

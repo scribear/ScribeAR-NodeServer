@@ -47,7 +47,7 @@ class BufferAudioModelBase(TranscriptionModelBase):
         self.num_purged_samples = 0
         self.buffer = NPCircularBuffer(
             self.max_segment_samples,
-            dtype=np.float16
+            dtype=np.float32
         )
 
     @staticmethod
@@ -132,10 +132,6 @@ class BufferAudioModelBase(TranscriptionModelBase):
         audio_chunk   (io.BytesIO): A buffer containing wav audio
         '''
         audio = decode_wav(audio_chunk)
-
-        # Filter out silent audio
-        if np.abs(audio).max() < self.silence_threshold:
-            return
 
         extra_audio = self.buffer.append_sequence(audio)
 
