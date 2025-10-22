@@ -2,7 +2,10 @@ name: 'Coverage Report'
 description: 'Checks out the repo and installs dependencies for node packages.'
 inputs:
   # Inputs are the same as the arguments for irongut/CodeCoverageSummary@v1.3.0
-  # All except filename have default values
+  # All except of packages_name and filename have default values
+  package_name:
+     description: ''
+     required: true
   filename:
     description: ''
     required: true
@@ -50,5 +53,6 @@ runs:
       uses: marocchino/sticky-pull-request-comment@v2
       if: github.event_name == 'pull_request'
       with:
+        header: ${{ inputs.package_name }}
         recreate: true
         path: code-coverage-results.md
