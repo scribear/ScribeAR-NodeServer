@@ -1,51 +1,51 @@
-name: 'Setup Node'
+name: 'Coverage Report'
 description: 'Checks out the repo and installs dependencies for node packages.'
 inputs:
   # Inputs are the same as the arguments for irongut/CodeCoverageSummary@v1.3.0
   # All except filename have default values
   filename:
+    description: ''
     required: true
   badge:
-    default: true
+    description: ''
+    default: 'true'
   fail_below_min:
-    default: false
+    description: ''
+    default: 'false'
   format:
+    description: ''
     default: markdown
   hide_branch_rate:
-    default: false
+    description: ''
+    default: 'false'
   hide_complexity:
-    default: false
+    description: ''
+    default: 'false'
   indicators: 
-    default: true
+    description: ''
+    default: 'true'
   output: 
+    description: ''
     default: both
   thresholds: 
+    description: ''
     default: '50 75'
 runs:
   using: "composite"
-  env:
-    FILENAME: ${{ inputs.filename }}
-    BADGE: ${{ inputs.badge }}
-    FAIL_BELOW_MIN: ${{ inputs.fail_below_min }}
-    FORMAT: ${{ inputs.format }}
-    HIDE_BRANCH_RATE: ${{ inputs.hide_branch_rate }}
-    HIDE_COMPLEXITY: ${{ inputs.hide_complexity }}
-    INDICATORS: ${{ inputs.indicators }}
-    OUTPUT: ${{ inputs.output }}
-    THRESHOLDS: ${{ inputs.thresholds }}
   steps:
     - name: Code Coverage Report
       uses: irongut/CodeCoverageSummary@v1.3.0
       with:
-        filename: ${{ env.FILENAME }}
-        badge: ${{ env.BADGE }}
-        fail_below_min: ${{ env.FAIL_BELOW_MIN }}
-        format: ${{ env.FORMAT }}
-        hide_branch_rate: ${{ env.HIDE_BRANCH_RATE }}
-        hide_complexity: ${{ env.HIDE_COMPLEXITY }}
-        indicators: ${{ env.INDICATORS }}
-        output: ${{ env.OUTPUTS }}
-        thresholds: ${{ env.THRESHOLDS }}
+        filename: ${{ inputs.filename }}
+        badge: ${{ inputs.badge == 'true' }}
+        fail_below_min: ${{ inputs.fail_below_min == 'true' }}
+        format: ${{ inputs.format }}
+        hide_branch_rate: ${{ inputs.hide_branch_rate == 'true' }}
+        hide_complexity: ${{ inputs.hide_complexity == 'true' }}
+        indicators: ${{ inputs.indicators == 'true' }}
+        output: ${{ inputs.output }}
+        thresholds: ${{ inputs.thresholds }}
+        
     - name: Add Coverage PR Comment
       uses: marocchino/sticky-pull-request-comment@v2
       if: github.event_name == 'pull_request'
