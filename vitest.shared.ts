@@ -13,7 +13,8 @@ export default defineConfig({
       provider: 'istanbul', // or 'v8'
       // Text to enable quick summary in terminal
       // HTML for interactive view, with line by line breakdown
-      reporter: ['text', 'html'],
+      // cobertura for CI/CD actions
+      reporter: ['text', 'html', 'cobertura'],
     },
   },
 });
