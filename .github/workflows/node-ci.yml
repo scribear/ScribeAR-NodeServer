@@ -22,31 +22,43 @@ env:
   DOCKERHUB_ORG: "scribear"
 
 jobs:
-  lint-build-test-node:
+  check-formatting-node:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-
     steps:
-      - name: Set up Git repository
-        uses: actions/checkout@v4
-
-      - name: Set up Node.js ${{ env.NODE_VERSION }}
-        uses: actions/setup-node@v4
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-
-      - name: Install dependencies
-        working-directory: "."
-        run: npm ci
+      - name: Setup Node
+        uses: ./.github/actions/setup-node
 
       - name: Check formatting
         working-directory: "."
         run: npm run format
 
-      - name: Run linter
+  run-linter-node:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Setup Node
+        uses: ./.github/actions/setup-node
+
+      - name: Check formatting
         working-directory: "."
         run: npm run lint
+
+  run-build-node:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Setup Node
+        uses: ./.github/actions/setup-node
+
+      - name: Run build
+        working-directory: "."
+        run: npm run build
+
+  run-tests-node:
+    needs:
+      - run-build-node
+    runs-on: ubuntu-latest
+    steps:
+      - name: Setup Node
+        uses: ./.github/actions/setup-node
 
       - name: Run build
         working-directory: "."
@@ -56,8 +68,22 @@ jobs:
         working-directory: "."
         run: npm run test
 
+      - name: Code Coverage Report - Base Fastify Server
+        uses: ./.github/actions/coverage-report
+        with:
+          filename: "apps/session-manager/coverage/cobertura-coverage.xml"
+
+      - name: Code Coverage Report - Session Manager
+        uses: ./.github/actions/coverage-report
+        with:
+          filename: "apps/session-manager/coverage/cobertura-coverage.xml"
+
   build-session-manager-container:
-    needs: lint-build-test-node
+    needs:
+      - check-formatting-node
+      - run-linter-node
+      - run-build-node
+      - run-tests-node
     runs-on: ubuntu-latest
     env:
       CONTAINER_NAME: "session-manager"
