@@ -13,7 +13,6 @@ runs:
 
     - name: Set up Node.js ${{ inputs.node-version }}
       uses: actions/setup-node@v4
-      shell: bash
       with:
         node-version: ${{ inputs.node-version }}
 
