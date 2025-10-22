@@ -56,6 +56,7 @@ jobs:
         run: npm run build
 
   run-tests-node:
+    permissions: "write-all"
     needs:
       - run-build-node
     runs-on: ubuntu-latest
