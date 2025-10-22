@@ -76,13 +76,13 @@ jobs:
       - name: Code Coverage Report - Base Fastify Server
         uses: ./.github/actions/coverage-report
         with:
-          package_name: "Base Fastify Server Coverage Report"
+          package_name: "Base Fastify Server"
           filename: "./libs/base-fastify-server/coverage/cobertura-coverage.xml"
 
       - name: Code Coverage Report - Session Manager
         uses: ./.github/actions/coverage-report
         with:
-          package_name: "Session Manager Coverage Report"
+          package_name: "Session Manager"
           filename: "./apps/session-manager/coverage/cobertura-coverage.xml"
 
   build-session-manager-container:
