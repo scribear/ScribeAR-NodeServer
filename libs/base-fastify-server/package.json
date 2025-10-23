@@ -16,6 +16,10 @@
     "test": "vitest run"
   },
   "dependencies": {
-    "pino": "10.1.0"
+    "@fastify/helmet": "13.0.2",
+    "@fastify/sensible": "6.0.3",
+    "fastify": "5.6.1",
+    "pino": "10.1.0",
+    "uuid": "13.0.0"
   }
 }
