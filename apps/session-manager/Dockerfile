@@ -13,6 +13,8 @@ COPY package*.json .
 
 ARG SRC="session-manager"
 COPY apps/${SRC}/package*.json apps/${SRC}/
+ARG LIB="base-schema"
+COPY libs/${LIB}/package*.json libs/${LIB}/
 ARG LIB="session-manager-schema"
 COPY libs/${LIB}/package*.json libs/${LIB}/
 
@@ -23,6 +25,8 @@ COPY tsconfig.base.json .
 
 ARG SRC="session-manager"
 COPY apps/${SRC} apps/${SRC}
+ARG LIB="base-schema"
+COPY libs/${LIB} libs/${LIB}
 ARG LIB="session-manager-schema"
 COPY libs/${LIB} libs/${LIB}
 
@@ -39,6 +43,8 @@ COPY package*.json .
 
 ARG SRC="session-manager"
 COPY apps/${SRC}/package*.json apps/${SRC}/
+ARG LIB="base-schema"
+COPY libs/${LIB}/package*.json libs/${LIB}/
 ARG LIB="session-manager-schema"
 COPY libs/${LIB}/package*.json libs/${LIB}/
 
@@ -47,6 +53,8 @@ RUN npm ci --omit=dev
 # Copy the build artifacts from build-env container
 ARG SRC="session-manager"
 COPY --from=build-env /app/apps/${SRC}/dist/src/ /app/apps/${SRC}/dist/src/
+ARG LIB="base-schema"
+COPY --from=build-env /app/libs/${LIB}/dist/src/ /app/libs/${LIB}/dist/src/
 ARG LIB="session-manager-schema"
 COPY --from=build-env /app/libs/${LIB}/dist/src/ /app/libs/${LIB}/dist/src/
 
