@@ -6,7 +6,7 @@ import createServer from './server/create_server.js';
  */
 async function main() {
   const config = new AppConfig();
-  const { logger, fastify } = createServer(config);
+  const { logger, fastify } = await createServer(config);
 
   // Handle uncaught exceptions and rejections
   process.on('uncaughtException', (err) => {

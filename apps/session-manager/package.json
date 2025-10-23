@@ -18,6 +18,9 @@
     "test": "vitest run"
   },
   "dependencies": {
-    "env-schema": "6.1.0"
+    "@fastify/swagger": "9.5.2",
+    "@fastify/swagger-ui": "5.2.3",
+    "env-schema": "6.1.0",
+    "typebox": "1.0.41"
   }
 }
