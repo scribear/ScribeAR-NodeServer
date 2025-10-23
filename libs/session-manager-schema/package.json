@@ -12,5 +12,8 @@
     "format:fix": "prettier --write ./src",
     "lint": "eslint ./src",
     "lint:fix": "eslint ./src --fix"
+  },
+  "dependencies": {
+    "typebox": "1.0.41"
   }
 }
