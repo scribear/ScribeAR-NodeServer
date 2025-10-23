@@ -8,8 +8,8 @@
   "scripts": {
     "build": "tsc --build",
     "start": "node ./dist/src/index.js",
-    "start:dev": "node ./dist/src/index.js --dev",
-    "dev": "nodemon --exec 'npm run build && npm run start:dev' --watch src --watch ../../libs/base-schema/src --watch ../../libs/session-manager-schema/src src/index.ts",
+    "start:dev": "node ./dist/src/index.js --dev | pino-pretty",
+    "dev": "nodemon --exec 'npm run build && npm run start:dev' --watch src --watch ../../libs/base-fastify-server/src --watch ../../libs/base-schema/src --watch ../../libs/session-manager-schema/src src/index.ts",
     "format": "prettier --check ./src ./tests",
     "format:fix": "prettier --write ./src ./tests",
     "lint": "eslint ./src ./tests",
