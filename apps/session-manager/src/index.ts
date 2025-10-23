@@ -1,3 +1,3 @@
-import "@scribear/session-manager-schema";
+import '@scribear/session-manager-schema';
 
-console.log("Hello from session-manager!");
+console.log('Hello from session-manager!');
