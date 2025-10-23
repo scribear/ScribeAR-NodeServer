@@ -15,6 +15,7 @@ import { v4 as uuidv4 } from 'uuid';
 
 import type { BaseLogger, LogLevel } from './create_logger.js';
 import { createLogger } from './create_logger.js';
+import scopeLogger from './hooks/on_request/scope_logger.js';
 import errorHandler from './plugins/error_handler.js';
 import jsonParser from './plugins/json_parser.js';
 import notFoundHandler from './plugins/not_found_handler.js';
@@ -22,7 +23,7 @@ import schemaValidator from './plugins/schema_validator.js';
 import type { BaseDependencies } from './types/base_dependencies.js';
 
 /**
- * Creates fastify server, logger, dependency container and loads default plugins
+ * Creates fastify server, logger, dependency container and loads default plugins and hooks
  * @param logLevel Minimum log severity level for created logger
  * @param fastifyConfig Additional options for fastify server
  * @returns object containing fastify server, logger, and dependency container
@@ -66,6 +67,9 @@ function createBaseServer(
   fastify.register(jsonParser);
   fastify.register(notFoundHandler);
   fastify.register(schemaValidator);
+
+  // Register hooks
+  fastify.register(scopeLogger);
 
   return {
     logger,
