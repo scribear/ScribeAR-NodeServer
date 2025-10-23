@@ -38,7 +38,7 @@ jobs:
       - name: Setup Node
         uses: ./.github/actions/setup-node
 
-      - name: Check formatting
+      - name: Run linter
         working-directory: "."
         run: npm run lint
 
