@@ -56,10 +56,9 @@ runs:
         file: ${{ inputs.dockerfile }}
         platforms: "linux/arm64"
         # Use build cache for faster builds
-        cache-from:
-          - type=registry,mode=max,ref=${{ inputs.image_name }}:buildcache-linux-amd64
-        cache-to:
-          - type=registry,mode=max,ref=${{ inputs.image_name }}:buildcache-linux-amd64
+        cache-from: |
+          type=registry,mode=max,ref=${{ inputs.image_name }}:buildcache-linux-amd64
+        cache-to: type=registry,mode=max,ref=${{ inputs.image_name }}:buildcache-linux-amd64
 
     - name: Build linux/arm64
       uses: docker/build-push-action@v6
@@ -69,10 +68,9 @@ runs:
         file: ${{ inputs.dockerfile }}
         platforms: "linux/arm64"
         # Use build cache for faster builds
-        cache-from:
-          - type=registry,mode=max,ref=${{ inputs.image_name }}:buildcache-linux-arm64
-        cache-to:
-          - type=registry,mode=max,ref=${{ inputs.image_name }}:buildcache-linux-arm64
+        cache-from: |
+          type=registry,mode=max,ref=${{ inputs.image_name }}:buildcache-linux-arm64
+        cache-to: type=registry,mode=max,ref=${{ inputs.image_name }}:buildcache-linux-arm64
 
     # After independent builds, build images with all architectures combined and push
     #   Combining all architectures ensures that the final tagged image doesn't get overritten by the last architecture that pushes
@@ -89,6 +87,6 @@ runs:
         tags: ${{ steps.meta.outputs.tags }}
         labels: ${{ steps.meta.outputs.labels }}
         # Use build cache for faster builds
-        cache-from:
-          - type=registry,mode=max,ref=${{ inputs.image_name }}:buildcache-linux-amd64
-          - type=registry,mode=max,ref=${{ inputs.image_name }}:buildcache-linux-amd64
+        cache-from: |
+          type=registry,mode=max,ref=${{ inputs.image_name }}:buildcache-linux-amd64
+          type=registry,mode=max,ref=${{ inputs.image_name }}:buildcache-linux-amd64
