@@ -7,10 +7,7 @@ import {
   asValue,
   createContainer,
 } from 'awilix';
-import Fastify, {
-  type FastifyInstance,
-  type FastifyServerOptions,
-} from 'fastify';
+import Fastify, { type FastifyServerOptions } from 'fastify';
 import { v4 as uuidv4 } from 'uuid';
 
 import type { BaseLogger, LogLevel } from './create_logger.js';
@@ -21,6 +18,7 @@ import jsonParser from './plugins/json_parser.js';
 import notFoundHandler from './plugins/not_found_handler.js';
 import schemaValidator from './plugins/schema_validator.js';
 import type { BaseDependencies } from './types/base_dependencies.js';
+import type { BaseFastifyInstance } from './types/base_fastify_types.js';
 
 /**
  * Creates fastify server, logger, dependency container and loads default plugins and hooks
@@ -34,7 +32,7 @@ function createBaseServer(
 ): {
   logger: BaseLogger;
   dependencyContainer: AwilixContainer<BaseDependencies>;
-  fastify: FastifyInstance;
+  fastify: BaseFastifyInstance;
 } {
   const logger = createLogger(logLevel);
 
@@ -74,7 +72,7 @@ function createBaseServer(
   return {
     logger,
     dependencyContainer,
-    fastify: fastify,
+    fastify: fastify as BaseFastifyInstance,
   };
 }
 
