@@ -9,13 +9,17 @@
     "libs/*"
   ],
   "scripts": {
-    "build": "npm run build --workspaces --if-present"
+    "build": "npm run build --workspaces --if-present",
+    "format": "npm run format --workspaces --if-present",
+    "format:fix": "npm run format:fix --workspaces --if-present"
   },
   "engines": {
     "node": ">=24.0.0"
   },
   "devDependencies": {
+    "@trivago/prettier-plugin-sort-imports": "5.2.2",
     "@types/node": "24.9.1",
+    "prettier": "3.6.2",
     "typescript": "5.9.3"
   }
 }
