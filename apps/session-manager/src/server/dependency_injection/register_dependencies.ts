@@ -1,16 +1,20 @@
 // Need to import so that declare module '@fastify/awilix' below works
 import '@fastify/awilix';
-import { type AwilixContainer, asValue } from 'awilix';
+import { type AwilixContainer, Lifetime, asClass, asValue } from 'awilix';
 
 import type { BaseDependencies } from '@scribear/base-fastify-server';
 
 import type AppConfig from '../../app_config/app_config.js';
+import HealthcheckController from '../features/healthcheck/healthcheck.controller.js';
 
 /**
  * Define types for entities in dependency container
  */
 interface AppDependencies extends BaseDependencies {
   config: AppConfig;
+
+  // Healthcheck
+  healthcheckController: HealthcheckController;
 }
 
 /**
@@ -37,6 +41,11 @@ function registerDependencies(
   dependencyContainer.register({
     // Config
     config: asValue(config),
+
+    // Healthcheck
+    healthcheckController: asClass(HealthcheckController, {
+      lifetime: Lifetime.SCOPED,
+    }),
   });
 }
 

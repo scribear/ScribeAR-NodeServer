@@ -2,6 +2,7 @@ import { createBaseServer } from '@scribear/base-fastify-server';
 
 import type AppConfig from '../app_config/app_config.js';
 import registerDependencies from './dependency_injection/register_dependencies.js';
+import healthcheckRouter from './features/healthcheck/healthcheck.router.js';
 import swagger from './plugins/swagger.js';
 
 /**
@@ -20,6 +21,9 @@ async function createServer(config: AppConfig) {
   }
 
   registerDependencies(dependencyContainer, config);
+
+  // Register routes
+  fastify.register(healthcheckRouter);
 
   return { logger, fastify };
 }
