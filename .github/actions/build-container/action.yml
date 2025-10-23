@@ -1,0 +1,69 @@
+name: "Build Containers"
+description: "Builds linux/amd64 and linux/arm64 docker containers using provided config."
+inputs:
+  # Note that DOCKERHUB_USERNAME and DOCKERHUB_PASSWORD are expected to be provided as secrets.
+  image_name:
+    description: "Container image name (e.g., scribear/app)."
+  build_context:
+    description: "Docker build context."
+  dockerfile:
+    description: "Path to the Dockerfile."
+runs:
+  using: "composite"
+  steps:
+    - name: Set up Git repository
+      uses: actions/checkout@v4
+
+    # Generate tags and labels for the Docker image
+    - name: Generate Container Metadata
+      id: meta
+      uses: docker/metadata-action@v5
+      with:
+        images: ${{ inputs.image_name }}
+        tags: |
+          type=schedule
+          type=ref,event=branch
+          type=ref,event=pr
+          type=semver,pattern={{version}}
+          type=semver,pattern={{major}}.{{minor}}
+          type=semver,pattern={{major}}
+
+    - name: Set up QEMU
+      uses: docker/setup-qemu-action@v3
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+
+    - name: Login to DockerHub
+      uses: docker/login-action@v3
+      with:
+        username: ${{ secrets.DOCKERHUB_USERNAME }}
+        password: ${{ secrets.DOCKERHUB_PASSWORD }}
+
+    - name: Build and push linux/amd64
+      uses: docker/build-push-action@v6
+      with:
+        push: true
+        context: ${{ inputs.build_context }}
+        file: ${{ inputs.dockerfile }}
+        platforms: "linux/amd64"
+        # Tag image with generated tags and labels
+        tags: ${{ steps.meta.outputs.tags }}
+        labels: ${{ steps.meta.outputs.labels }}
+        # Use build cache for faster builds
+        cache-from: type=registry,ref=${{ inputs.image_name }}:buildcache-linux-amd64
+        cache-to: type=registry,ref=${{ inputs.image_name }}:buildcache-linux-amd64,mode=max
+
+    - name: Build and push linux/arm64
+      uses: docker/build-push-action@v6
+      with:
+        push: true
+        context: ${{ inputs.build_context }}
+        file: ${{ inputs.dockerfile }}
+        platforms: "linux/arm64"
+        # Tag image with generated tags and labels
+        tags: ${{ steps.meta.outputs.tags }}
+        labels: ${{ steps.meta.outputs.labels }}
+        # Use build cache for faster builds
+        cache-from: type=registry,ref=${{ inputs.image_name }}:buildcache-linux-arm64
+        cache-to: type=registry,ref=${{ inputs.image_name }}:buildcache-linux-arm64,mode=max

@@ -1,9 +1,9 @@
-name: 'Setup Node'
-description: 'Checks out the repo and installs dependencies for node packages.'
+name: "Setup Node"
+description: "Checks out the repo and installs dependencies for node packages."
 inputs:
   node-version:
-    description: ''
-    default: '24.10.0'
+    description: "Node.js version to use for setup."
+    default: "24.10.0"
 runs:
   using: "composite"
 

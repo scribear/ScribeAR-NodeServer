@@ -1,38 +1,39 @@
-name: 'Coverage Report'
-description: 'Checks out the repo and installs dependencies for node packages.'
+name: "Coverage Report"
+description: "Reads provided cobertura coverage report and adds a comment to the PR with the coverage summary."
 inputs:
-  # Inputs are the same as the arguments for irongut/CodeCoverageSummary@v1.3.0
+  # Inputs (except package_name) are the same as the arguments for irongut/CodeCoverageSummary@v1.3.0
+  #   see: https://github.com/irongut/CodeCoverageSummary
   # All except of packages_name and filename have default values
   package_name:
-     description: ''
-     required: true
+    description: "Package name for the coverage report title in PR comments."
+    required: true
   filename:
-    description: ''
+    description: "A cobertura file to load coverage data from."
     required: true
   badge:
-    description: ''
-    default: 'true'
+    description: ""
+    default: "true"
   fail_below_min:
-    description: ''
-    default: 'false'
+    description: ""
+    default: "false"
   format:
-    description: ''
+    description: ""
     default: markdown
   hide_branch_rate:
-    description: ''
-    default: 'false'
+    description: ""
+    default: "false"
   hide_complexity:
-    description: ''
-    default: 'false'
-  indicators: 
-    description: ''
-    default: 'true'
-  output: 
-    description: ''
+    description: ""
+    default: "false"
+  indicators:
+    description: ""
+    default: "true"
+  output:
+    description: ""
     default: both
-  thresholds: 
-    description: ''
-    default: '50 75'
+  thresholds:
+    description: ""
+    default: "50 75"
 runs:
   using: "composite"
   steps:
@@ -50,7 +51,6 @@ runs:
         thresholds: ${{ inputs.thresholds }}
 
     - name: Add Package Name To Comment
-      if: github.event_name == 'pull_request'
       shell: bash
       run: |
         echo "## ${PACKAGE_NAME} Coverage Report" > tmp && cat code-coverage-results.md >> tmp && mv tmp code-coverage-results.md
@@ -61,6 +61,7 @@ runs:
       uses: marocchino/sticky-pull-request-comment@v2
       if: github.event_name == 'pull_request'
       with:
+        # Use package_name as unique identifier for the comment it can be recreated if PR is updated
         header: ${{ inputs.package_name }}
         recreate: true
         path: code-coverage-results.md
