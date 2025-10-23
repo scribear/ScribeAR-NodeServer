@@ -9,6 +9,8 @@
     "build": "tsc --build",
     "start": "node ./dist/src/index.js",
     "format": "prettier --check ./src",
-    "format:fix": "prettier --write ./src"
+    "format:fix": "prettier --write ./src",
+    "lint": "eslint ./src",
+    "lint:fix": "eslint ./src --fix"
   }
 }
