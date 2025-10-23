@@ -1,6 +1,9 @@
 import { Type } from 'typebox';
 
-import { SHARED_ERROR_REPLY_SCHEMA } from '@scribear/base-schema';
+import {
+  type BaseRouteSchema,
+  SHARED_ERROR_REPLY_SCHEMA,
+} from '@scribear/base-schema';
 
 const HEALTHCHECK_SCHEMA = {
   description: 'Probes liveliness of server',
@@ -15,4 +18,9 @@ const HEALTHCHECK_SCHEMA = {
   },
 };
 
-export { HEALTHCHECK_SCHEMA };
+const HEALTHCHECK_ROUTE: BaseRouteSchema = {
+  method: 'GET',
+  url: '/healthcheck',
+};
+
+export { HEALTHCHECK_SCHEMA, HEALTHCHECK_ROUTE };
