@@ -1,0 +1,67 @@
+name: Node CI
+
+on:
+  push:
+    paths:
+      - apps/*
+      - libs/*
+    branches:
+      - main
+      - staging
+    tags:
+      - "v*.*.*"
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  actions: read
+  contents: read
+
+jobs:
+  check-formatting-node:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - name: Setup Node
+        uses: ./.github/actions/setup-node
+
+      - name: Check formatting
+        working-directory: "."
+        run: npm run format
+
+  run-linter-node:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - name: Setup Node
+        uses: ./.github/actions/setup-node
+
+      - name: Check formatting
+        working-directory: "."
+        run: npm run lint
+
+  run-build-node:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - name: Setup Node
+        uses: ./.github/actions/setup-node
+
+      - name: Run build
+        working-directory: "."
+        run: npm run build
+
+  run-tests-node:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - name: Setup Node
+        uses: ./.github/actions/setup-node
+
+      - name: Run build
+        working-directory: "."
+        run: npm run build
+
+      - name: Run tests
+        working-directory: "."
+        run: npm run test
