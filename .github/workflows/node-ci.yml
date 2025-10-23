@@ -90,9 +90,8 @@ jobs:
       - run-tests-node
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
-      - name: Setup Node
-        uses: ./.github/actions/setup-node
+      - name: Set up Git repository
+        uses: actions/checkout@v4
 
       - name: Build and Push Docker Image
         uses: ./.github/actions/build-container
@@ -100,3 +99,5 @@ jobs:
           image_name: "scribear/session-manager"
           build_context: "."
           dockerfile: "./apps/session-manager/Dockerfile"
+          dockerhub_username: ${{ secrets.DOCKERHUB_USERNAME }}
+          dockerhub_password: ${{ secrets.DOCKERHUB_PASSWORD }}

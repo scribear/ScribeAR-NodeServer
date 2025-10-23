@@ -1,19 +1,24 @@
 name: "Build Containers"
 description: "Builds linux/amd64 and linux/arm64 docker containers using provided config."
 inputs:
-  # Note that DOCKERHUB_USERNAME and DOCKERHUB_PASSWORD are expected to be provided as secrets.
   image_name:
     description: "Container image name (e.g., scribear/app)."
+    required: true
   build_context:
     description: "Docker build context."
+    required: true
   dockerfile:
     description: "Path to the Dockerfile."
+    required: true
+  dockerhub_username:
+    description: "DockerHub username."
+    required: true
+  dockerhub_password:
+    description: "DockerHub password."
+    required: true
 runs:
   using: "composite"
   steps:
-    - name: Set up Git repository
-      uses: actions/checkout@v4
-
     # Generate tags and labels for the Docker image
     - name: Generate Container Metadata
       id: meta
@@ -37,8 +42,8 @@ runs:
     - name: Login to DockerHub
       uses: docker/login-action@v3
       with:
-        username: ${{ secrets.DOCKERHUB_USERNAME }}
-        password: ${{ secrets.DOCKERHUB_PASSWORD }}
+        username: ${{ inputs.dockerhub_username }}
+        password: ${{ inputs.dockerhub_password }}
 
     - name: Build and push linux/amd64
       uses: docker/build-push-action@v6
