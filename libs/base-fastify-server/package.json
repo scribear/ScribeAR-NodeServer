@@ -15,5 +15,7 @@
     "test:dev": "vitest --ui --coverage",
     "test": "vitest run"
   },
-  "dependencies": {}
+  "dependencies": {
+    "pino": "10.1.0"
+  }
 }
