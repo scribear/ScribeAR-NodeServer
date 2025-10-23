@@ -15,6 +15,7 @@ import { v4 as uuidv4 } from 'uuid';
 
 import type { BaseLogger, LogLevel } from './create_logger.js';
 import { createLogger } from './create_logger.js';
+import jsonParser from './plugins/json_parser.js';
 import schemaValidator from './plugins/schema_validator.js';
 import type { BaseDependencies } from './types/base_dependencies.js';
 
@@ -59,6 +60,7 @@ function createBaseServer(
   // Register plugins
   fastify.register(fastifySensible);
   fastify.register(fastifyHelmet);
+  fastify.register(jsonParser);
   fastify.register(schemaValidator);
 
   return {
