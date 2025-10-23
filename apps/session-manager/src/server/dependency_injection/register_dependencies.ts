@@ -5,6 +5,8 @@ import { type AwilixContainer, Lifetime, asClass, asValue } from 'awilix';
 import type { BaseDependencies } from '@scribear/base-fastify-server';
 
 import type AppConfig from '../../app_config/app_config.js';
+import CalculatorController from '../features/calculator/calculator.controller.js';
+import CalculatorService from '../features/calculator/calculator.service.js';
 import HealthcheckController from '../features/healthcheck/healthcheck.controller.js';
 
 /**
@@ -15,6 +17,10 @@ interface AppDependencies extends BaseDependencies {
 
   // Healthcheck
   healthcheckController: HealthcheckController;
+
+  // Calculator
+  calculatorController: CalculatorController;
+  calculatorService: CalculatorService;
 }
 
 /**
@@ -44,6 +50,14 @@ function registerDependencies(
 
     // Healthcheck
     healthcheckController: asClass(HealthcheckController, {
+      lifetime: Lifetime.SCOPED,
+    }),
+
+    // Calculator
+    calculatorController: asClass(CalculatorController, {
+      lifetime: Lifetime.SCOPED,
+    }),
+    calculatorService: asClass(CalculatorService, {
       lifetime: Lifetime.SCOPED,
     }),
   });
