@@ -6,10 +6,13 @@
   },
   "include": [
     "src",
-    "tests"
+    "tests",
   ],
   // Link to dependencies
   "references": [
+    {
+      "path": "../../libs/base-fastify-server"
+    },
     {
       "path": "../../libs/session-manager-schema"
     }

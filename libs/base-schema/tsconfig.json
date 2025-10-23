@@ -8,9 +8,5 @@
     "src",
   ],
   // Link to dependencies
-  "references": [
-    {
-      "path": "../base-schema/tsconfig.json"
-    }
-  ]
+  "references": []
 }

@@ -1,5 +1,5 @@
 {
-  "name": "@scribear/session-manager",
+  "name": "@scribear/base-fastify-server",
   "version": "0.0.0",
   "description": "",
   "author": "scribear",
@@ -7,9 +7,7 @@
   "type": "module",
   "scripts": {
     "build": "tsc --build",
-    "start": "node ./dist/src/index.js",
-    "start:dev": "node ./dist/src/index.js --dev | pino-pretty",
-    "dev": "nodemon --exec 'npm run build && npm run start:dev' --watch src --watch ../../libs/base-fastify-server/src --watch ../../libs/base-schema/src --watch ../../libs/session-manager-schema/src src/index.ts",
+    "dev": "tsc --build --watch",
     "format": "prettier --check ./src ./tests",
     "format:fix": "prettier --write ./src ./tests",
     "lint": "eslint ./src ./tests",
@@ -19,10 +17,13 @@
   },
   "dependencies": {
     "@fastify/awilix": "8.0.0",
-    "@fastify/swagger": "9.5.2",
-    "@fastify/swagger-ui": "5.2.3",
+    "@fastify/helmet": "13.0.2",
+    "@fastify/sensible": "6.0.3",
+    "@fastify/type-provider-typebox": "6.1.0",
     "awilix": "12.0.5",
-    "env-schema": "6.1.0",
-    "typebox": "1.0.41"
+    "fastify": "5.6.1",
+    "fastify-plugin": "5.1.0",
+    "pino": "10.1.0",
+    "uuid": "13.0.0"
   }
 }
