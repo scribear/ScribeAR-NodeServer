@@ -16,5 +16,8 @@
     "lint:fix": "eslint ./src ./tests --fix",
     "test:dev": "vitest --ui --coverage",
     "test": "vitest run"
+  },
+  "dependencies": {
+    "env-schema": "6.1.0"
   }
 }
