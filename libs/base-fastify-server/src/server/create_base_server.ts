@@ -17,6 +17,7 @@ import type { BaseLogger, LogLevel } from './create_logger.js';
 import { createLogger } from './create_logger.js';
 import errorHandler from './plugins/error_handler.js';
 import jsonParser from './plugins/json_parser.js';
+import notFoundHandler from './plugins/not_found_handler.js';
 import schemaValidator from './plugins/schema_validator.js';
 import type { BaseDependencies } from './types/base_dependencies.js';
 
@@ -63,6 +64,7 @@ function createBaseServer(
   fastify.register(fastifyHelmet);
   fastify.register(errorHandler);
   fastify.register(jsonParser);
+  fastify.register(notFoundHandler);
   fastify.register(schemaValidator);
 
   return {
