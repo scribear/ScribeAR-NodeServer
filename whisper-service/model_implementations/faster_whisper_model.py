@@ -81,7 +81,8 @@ class FasterWhisperModel(LocalAgreeModelBase):
             audio_segment,
             initial_prompt=prev_text,
             word_timestamps=True,
-            vad_filter=True
+            vad_filter=True,
+            hallucination_silence_threshold=0.1
         )
 
         segments = []
