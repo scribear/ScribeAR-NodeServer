@@ -82,7 +82,9 @@ class FasterWhisperModel(LocalAgreeModelBase):
             initial_prompt=prev_text,
             word_timestamps=True,
             vad_filter=True,
-            hallucination_silence_threshold=0.1
+            hallucination_silence_threshold=0.1,
+            language="en",
+            multilingual=False,
         )
 
         segments = []
