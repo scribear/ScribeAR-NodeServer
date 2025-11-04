@@ -81,7 +81,9 @@ class FasterWhisperModel(LocalAgreeModelBase):
             audio_segment,
             initial_prompt=prev_text,
             word_timestamps=True,
-            vad_filter=True
+            vad_filter=True,
+            language="en",
+            multilingual=False
         )
 
         segments = []
