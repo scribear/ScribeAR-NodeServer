@@ -120,7 +120,7 @@ function registerSource(fastify: FastifyInstance, ws: WebSocket, log: FastifyBas
 export default function websocketHandler(fastify: FastifyInstance) {
   fastify.get('/sourcesink', {websocket: true}, async (ws, req) => {
     if (!(await authorizeWebsocket(ws, fastify.authenticationService, [Identities.SourceToken], fastify.log))) {
-      return ws.close();
+      return ws.close(3000);
     }
 
     registerSink(fastify, ws, req.log);
@@ -133,7 +133,7 @@ export default function websocketHandler(fastify: FastifyInstance) {
 
   fastify.get('/source', {websocket: true}, async (ws, req) => {
     if (!(await authorizeWebsocket(ws, fastify.authenticationService, [Identities.SourceToken], fastify.log))) {
-      return ws.close();
+      return ws.close(3000);
     }
 
     registerSource(fastify, ws, req.log);
@@ -152,7 +152,7 @@ export default function websocketHandler(fastify: FastifyInstance) {
         fastify.log,
       ))
     ) {
-      return ws.close();
+      return ws.close(3000);
     }
 
     registerSink(fastify, ws, req.log);
