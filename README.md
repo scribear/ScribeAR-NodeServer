@@ -1,3 +1,5 @@
+> **⚠️ Archived:** This repository is no longer maintained. Its functionality (node server, whisper service, deployment) has been superseded by the [scribear/scribear](https://github.com/scribear/scribear) monorepo. Please use that repository instead.
+
 # About
 
 This repository houses the node server and whisper service backend apps that are used to provide self hosted transcriptions for [ScribeAR](https://scribear.illinois.edu/v/index.html).
